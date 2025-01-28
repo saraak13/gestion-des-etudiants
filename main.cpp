@@ -8,7 +8,6 @@
 
 using namespace std;
 
-// Simple Date structure
 struct Date {
     int day;
     int month;
@@ -19,7 +18,6 @@ struct Date {
     }
 };
 
-// Base Class: Personne
 class Personne {
 protected:
     string nom;
@@ -32,7 +30,6 @@ public:
     Personne(){}
     Personne(const string& nom, const string& prenom, int age, const int& numeroTele)
         : nom(nom), prenom(prenom), age(age), numeroTele(numeroTele) {
-
         }
 
     // Destructor
@@ -48,7 +45,6 @@ public:
     void setNom(const string& nom) { this->nom = nom; }
     void setPrenom(const string& prenom) { this->prenom = prenom; }
     void setAge(int age){this->age = age; }
-
     void setNumeroTele(const int& numeroTele)
     { this->numeroTele = numeroTele;}
 
@@ -57,7 +53,6 @@ public:
         cout << "Nom: " << nom << ", Prenom: " << prenom << ", Age: " << age
              << ", Numero de telephone: " << numeroTele << endl;
     }
-
     virtual void actualiserDetails(const string& nom, const string& prenom, int age, const int& numeroTele)
     {   string numeroStr = to_string(numeroTele);
         if (age >= 15 && numeroStr.length() == 8)
@@ -68,11 +63,8 @@ public:
         this->numeroTele = numeroTele;}
         else
         {cout <<"L'age doit etre superier a 15 ans et le numero de telephone doit avoir 8 chiffres" << endl;}
-
     }
-
   virtual void saveToFile(const string& filename) const = 0;
-
   virtual void loadFromFile(const string& filename) = 0;
 };
 
@@ -85,14 +77,12 @@ private:
     float salaire;
     string idEnseignant;
     int vacances;
-
 public:
     // Constructor
     Enseignant(){}
     Enseignant(const string& nom, const string& prenom, int age, const int& numeroTele,
      Date date_recrutement, float salaire, const string& id_enseignant)
-        : Personne(nom, prenom, age, numeroTele)
-          {
+        : Personne(nom, prenom, age, numeroTele) {
     this->dateRecrutement.day = date_recrutement.day;
     this->dateRecrutement.month = date_recrutement.month;
     this->dateRecrutement.year = date_recrutement.year;
@@ -107,22 +97,16 @@ public:
     // Getters and Setters
     vector<string> getMatieres() const { return matieres; }
     void setMatieres(const vector<string>& matieres) { this->matieres = matieres; }
-
     vector<string> getNiveaux() const { return niveaux; }
     void setNiveaux(const vector<string>& niveaux) { this->niveaux = niveaux; }
-
     Date getDateRecrutement() const { return dateRecrutement; }
-    void setDateRecrutement(Date date_recrutement)
-    {
+    void setDateRecrutement(Date date_recrutement) {
     this->dateRecrutement.day = date_recrutement.day;
     this->dateRecrutement.month = date_recrutement.month;
     this->dateRecrutement.year = date_recrutement.year; }
-
     float getSalaire() const { return salaire; }
-
     string getIdEnseignant() const { return idEnseignant; }
     void setIdEnseignant(const string& id_enseignant) { this->idEnseignant = id_enseignant; }
-
     int getVacances() const { return vacances; }
     void setVacances(int vacances) { this->vacances = vacances; }
 
@@ -130,7 +114,6 @@ public:
     int calculerAnneesTravail() {
         time_t now = time(0); // Get current time
         tm *ltm = localtime(&now); // Convert to local time structure
-
         int currentYear = 1900 + ltm->tm_year; // Get current year
         return currentYear - dateRecrutement.year; // Assuming date_recrutement has a 'year' member
     }
@@ -147,18 +130,15 @@ public:
         cout << "Salary updated to: " << salaire << endl;
     }
 }
-
     void afficher() {
         Personne::afficher();
         cout << "id enseignant: " << idEnseignant << ", salaire: " << salaire << ", Vacances: " << vacances
         << ", date recrutement:" << dateRecrutement.day << "/" << dateRecrutement.month << "/"
         << dateRecrutement.year << endl;
-
         cout << "matieres:" << endl;
         for (const auto& mat : matieres) {
             cout << mat << endl;
         }
-
          cout << "niveaux:" << endl;
         for (const auto& niv : niveaux) {
             cout << niv << endl;
@@ -169,35 +149,29 @@ public:
       if (it == matieres.end())
       {matieres.push_back(matiere);}
     }
-
     void assignerNiveau(const string& niveau){
            auto it = find(niveaux.begin(), niveaux.end(), niveau);
       if (it == niveaux.end())
       {niveaux.push_back(niveau);}
     }
-
     void supprimerMatiere(string matiere) {
         auto it = find(matieres.begin(), matieres.end(), matiere);
         if (it != matieres.end()) {
             matieres.erase(it);
         }
     }
-
  void supprimerMatieres() {
         matieres.clear();
          }
-
     void supprimerNiveau(string niveau) {
         auto it = find(niveaux.begin(), niveaux.end(), niveau);
         if (it != niveaux.end()) {
             niveaux.erase(it);
         }
     }
-
  void supprimerNiveaux() {
         niveaux.clear();
          }
-
     void prendreVacances(int days) {
     if (days <= vacances) {
         vacances -= days;
@@ -221,19 +195,17 @@ public:
             cout << "Unable to open file for writing." << endl;
         }
     }
-
    void loadFromFile(const string& filename) {
     ifstream file(filename);
     string line;
     if (getline(file, line)) {
         stringstream ss(line);
-getline(ss, nom, ',');
+        getline(ss, nom, ',');
         getline(ss, prenom, ',');
         ss >> age;
         ss.ignore();
         ss >> numeroTele;
           ss.ignore();
-        // Assuming you have a constructor or method to set these values
         setNom(nom);
         setPrenom(prenom);
         setAge(age);
@@ -248,7 +220,6 @@ getline(ss, nom, ',');
           ss >> dateRecrutement.month;
           ss.ignore(); // Ignore the comma
           ss >> dateRecrutement.year;
-
     }
     if (getline(file, line)) {
         stringstream ss(line);
@@ -261,7 +232,6 @@ getline(ss, nom, ',');
     }
     file.close();
 }
- 
  friend istream& operator>>(istream& is, Enseignant& enseignant) {
     cout << "Enter Nom: ";
     is >> enseignant.nom;
@@ -290,7 +260,6 @@ public:
     matiere(){}
     matiere(const string& nom, Enseignant* enseignantResp)
         : nom(nom), enseignantResp(enseignantResp) {}
-
 
     // Destructor
     ~matiere() {}
@@ -337,13 +306,11 @@ public:
         }
         file.close();
     }
-
     friend istream& operator>>(istream& is, matiere& matiere) {
    string nom;
     cout << "Enter Nom: ";
     is >> matiere.nom;
     matiere.enseignantResp = nullptr;
- 
     return is;
 }
 };
@@ -357,8 +324,6 @@ private:
     string idEtudiant;
     string niveau;
     Date anneeInscription;
-
-
 public:
     // Constructor
     Etudiant(){}
@@ -373,22 +338,17 @@ public:
     // Getters and Setters
     vector<float> getNotes() const { return notes; }
     void setNotes(const vector<float>& notes) { this->notes = notes; }
-
- vector<string> getMatieres() const { return matieres; }
+    vector<string> getMatieres() const { return matieres; }
     void setMatieres(const vector<string>& matieres) { this->matieres = matieres; }
-
     string getIdEtudiant() const { return idEtudiant; }
     void setIdEtudiant(const string& id_etudiant) { this->idEtudiant = id_etudiant; }
-
     string getNiveau() const { return niveau; }
     void setNiveau(const string& niveau) { this->niveau = niveau; }
-
     Date getAnneeInscription() const { return anneeInscription; }
     void setAnneeInscription(Date annee_inscription)
     {   this->anneeInscription.day = annee_inscription.day;
         this->anneeInscription.month = annee_inscription.month;
         this->anneeInscription.year = annee_inscription.year; }
-
     vector<int> getAbsence() const { return absence; }
     void setAbsence(const vector<int>& absence) { this->absence = absence; }
 
@@ -406,7 +366,6 @@ public:
         }
     }
 }
-
 void supprimerMatiere(const string& matiere){
     auto it = find(matieres.begin(), matieres.end(), matiere);
     if(it != matieres.end())
@@ -416,13 +375,11 @@ void supprimerMatiere(const string& matiere){
         absence.erase(absence.begin() + (it - matieres.begin()));
     }
 }
-
 void supprimerMatieres(){
     matieres.clear();
     notes.clear();
     absence.clear();
 }
-
 void supprimerMatiere(const float seul){
    for(int i = 0; i < notes.size(); i++){
     if(notes[i] < seul){
@@ -430,15 +387,12 @@ void supprimerMatiere(const float seul){
         matieres.erase(matieres.begin() + i);
         absence.erase(absence.begin() + i);
            }
-
    }
 }
-
 void incrementerAbsence(const string& matiere)
 { auto it = find(matieres.begin(), matieres.end(), matiere);
 if(it != matieres.end())
-{
-    absence[it - matieres.begin()]++;
+{  absence[it - matieres.begin()]++;
 }
 else{
     cout <<"La matiere n'existe pas" << endl;
@@ -454,9 +408,7 @@ else{
             cout << "note de " << matieres[i] <<": "<< notes[i] << endl;
             cout << "absence: "<< absence[i] << endl;
         }
-
     }
-
     float moyenne() const {
         float sum = 0;
         for (size_t i = 0; i< notes.size(); i++)
@@ -465,7 +417,6 @@ else{
         }
         return notes.empty() ? 0 : sum / notes.size();
     }
-
  int  absenceTotal() const {
         int s = 0;
         for (size_t i = 0; i< absence.size(); i++)
@@ -474,7 +425,6 @@ else{
         }
     return s;
     }
-
     bool resultatFinale() {
         if(moyenne() < 10 || absenceTotal() > 30)
         {
@@ -483,7 +433,6 @@ else{
         else
         {return true;}
     }
-
     // Save to file
     void saveToFile(const string& filename) const {
         ofstream file(filename);
@@ -499,7 +448,6 @@ else{
             cout << "Unable to open file for writing." << endl;
         }
     }
-
     // Load from file
     void loadFromFile(const string& filename) {
         ifstream file(filename);
@@ -512,12 +460,10 @@ else{
         ss.ignore();
         ss >> numeroTele;
           ss.ignore();
-        // Assuming you have a constructor or method to set these values
         setNom(nom);
         setPrenom(prenom);
         setAge(age);
         setNumeroTele(numeroTele);
-
          getline(ss, idEtudiant, ',');
          getline(ss, niveau, ',');
          int day, month, year;
@@ -552,12 +498,11 @@ else{
         is >> etudiant.idEtudiant;
         cout << "Enter Niveau: ";
         is >> etudiant.niveau;
+        cout << "Enter Date d'inscription (dd/mm/yyyy): ";
+        is >> etudiant.anneeInscription.day >> etudiant.anneeInscription.month >> etudiant.anneeInscription.year;
         return is;
     }
-
 };
-
-
 // Class: Administration
 class Administration : public Personne {
 private:
@@ -582,26 +527,19 @@ Administration(const string& nom, const string& prenom, int age, const int& nume
     this->id = id;
     this->vacances = 60;
 }
-
     // Destructor
     ~Administration() {}
-
     // Getters and Setters
     string getRole() const { return role; }
     void setRole(const string& role) { this->role = role; }
-
     Date getDateRecrutement() const { return dateRecrutement; }
     void setDateRecrutement(Date date_recrutement)
     {  this->dateRecrutement.day = date_recrutement.day;
     this->dateRecrutement.month = date_recrutement.month;
     this->dateRecrutement.year = date_recrutement.year; }
-
     float getSalaire() const { return salaire; }
-
-
     string getId() const { return id; }
     void setId(const string& id) { this->id = id; }
-
     friend class Etudiant;
    int getVacances() const { return vacances; }
    void setVacances(int vacances) { this->vacances = vacances; }
@@ -610,7 +548,6 @@ Administration(const string& nom, const string& prenom, int age, const int& nume
  int calculerAnneesTravail() {
         time_t now = time(0); // Get current time
         tm *ltm = localtime(&now); // Convert to local time structure
-
         int currentYear = 1900 + ltm->tm_year; // Get current year
         return currentYear - dateRecrutement.year; // Assuming date_recrutement has a 'year' member
     }
@@ -629,7 +566,6 @@ Administration(const string& nom, const string& prenom, int age, const int& nume
          {  c = 0,1;}
         salaire += salaire * (1 + c * yearsWorked);
     }
-
 void updateSalary(float newSalary) {
     if (newSalary < 0) {
         cout << "Salary cannot be negative." << endl;
@@ -638,7 +574,6 @@ void updateSalary(float newSalary) {
         cout << "Salary updated to: " << salaire << endl;
     }
 }
-
 void afficher() const {
     Personne::afficher(); // Call the base class afficher method
     cout << "Role: " << role
@@ -650,13 +585,11 @@ void afficher() const {
          << dateRecrutement.month << "/"
          << dateRecrutement.year << endl;
 }
-
     void avertissement(const Etudiant& etudiant) {
     if (etudiant.moyenne() < 10 || etudiant.absenceTotal() > 10) {
         cout << "Avertissement à " << etudiant.getNom() << endl;
     }
 }
-
 void bonus(const Etudiant& etudiant) {
     if (etudiant.moyenne() > 18 && etudiant.absenceTotal() < 10) {
         cout << "Bonus à " << etudiant.getNom() << endl;
@@ -681,7 +614,6 @@ void bonus(const Etudiant& etudiant) {
             cout << "Unable to open file for writing." << endl;
         }
     }
-
     // Load from file
     void loadFromFile(const string& filename) {
         ifstream file(filename);
@@ -733,7 +665,6 @@ friend istream& operator>>(istream& is, Administration& admin) {
     is >> admin.dateRecrutement.day >> admin.dateRecrutement.month >> admin.dateRecrutement.year;
     return is;
 }
-
 };
 
 // Class: delegue
@@ -769,7 +700,6 @@ public:
     this->electedDate.year = electedDate.year;
     this->performance = 0;
 }
-
     // Destructor
     ~Delegue() {}
 
@@ -786,7 +716,6 @@ public:
     {       this->electedDate.day = date.day;
             this->electedDate.month = date.month;
             this->electedDate.year = date.year; }
-
     void setPerformance(int perf) { performance = perf; }
 
     // Methods
@@ -796,7 +725,6 @@ public:
         tasks.push_back(task);
         taskComplete.push_back(false);
     }}
-
 void completerTache(const string& task){
     auto it = find(tasks.begin(), tasks.end(), task);
     if(it != tasks.end())
@@ -809,7 +737,6 @@ void completerTache(const string& task){
       taskComplete.push_back(true);
     }
 }
-
 void supprimerTache(const string& task){
     auto it = find(tasks.begin(), tasks.end(), task);
     if(it != tasks.end())
@@ -818,7 +745,6 @@ void supprimerTache(const string& task){
         taskComplete.erase(taskComplete.begin() + (it - tasks.begin()));
     }
 }
-
 void supprimerTaches(){
     tasks.clear();
     taskComplete.clear();
@@ -830,8 +756,7 @@ void supprimerTachesComplete(){
         {
             tasks.erase(tasks.begin() + i);
             taskComplete.erase(taskComplete.begin() + i);
-        }
-    }
+        }  }
 }
 
     void evaluation() {
@@ -857,7 +782,6 @@ void supprimerTachesComplete(){
         {
             performance = 0;
         }
-
         cout << "Delegue Performance: " << performance << endl;
     }
     void afficher(){
@@ -888,7 +812,6 @@ file << getNom() << "," << getPrenom() << "," << getAge() << "," << getNumeroTel
             cout << "Unable to open file for writing." << endl;
         }
     }
-
     // Load from file
    void loadFromFile(const string& filename) {
     ifstream file(filename);
@@ -905,34 +828,25 @@ file << getNom() << "," << getPrenom() << "," << getAge() << "," << getNumeroTel
             ss.ignore();
             ss >> numeroTele;
             ss.ignore();
-
             // Set the values using the setter functions
             setNom(nom);
             setPrenom(prenom);
             setAge(age);
             setNumeroTele(numeroTele);
-
             // Read ID and Niveau
             getline(ss, idEtudiantTemp, ',');
             getline(ss, niveauTemp, ',');
             setIdEtudiant(idEtudiantTemp);
             setNiveau(niveauTemp);
-
             // Read the date of inscription
             int day, month, year;
             char delimiter; // For the '/' character
             ss >> day >> delimiter >> month >> delimiter >> year;
             setAnneeInscription({day, month, year}); // Set the date
-
                  getline(ss, idDelegue, ',');
-
-
             ss >> day >> delimiter >> month >> delimiter >> year;
             electedDate = {day, month, year}; // Set the date
             ss >> performance;}
-
-
-
         // Read the remaining lines for tasks
         while (getline(file, line)) {
             stringstream ss(line);
@@ -948,7 +862,6 @@ file << getNom() << "," << getPrenom() << "," << getAge() << "," << getNumeroTel
         cout << "Unable to open file for reading." << endl;
     }
 }
-
 friend istream& operator>>(istream& is, Delegue& delegue) {
     cout << "Enter ID Delegue: ";
     is >> delegue.idDelegue;
@@ -959,7 +872,6 @@ friend istream& operator>>(istream& is, Delegue& delegue) {
     return is;
 }
 };
-
 // Class: groupe
 class Groupe {
 private:
@@ -970,14 +882,11 @@ private:
     Delegue* groupeDelegue;
     float moyenneGroupe;
     int numero;
-
 public:
     // Constructors
     Groupe(){}
     Groupe(const string& niveau,const int& numero)
         : niveau(niveau), numero(numero) {}
-
-
     // Destructor
     ~Groupe() {
     for (auto& mat : matieres) {
@@ -988,7 +897,6 @@ public:
     }
     delete groupeDelegue; // Clean up dynamically allocated delegue
 }
-
     // Getters
     vector<Date> getDateExamen() const { return dateExamen; }
     string getNiveau() const { return niveau; }
@@ -997,18 +905,14 @@ public:
     const vector<matiere*> getMatieres() const { return matieres; }
     float getMoyenneGroupe() const { return moyenneGroupe;}
     int getNumero() const { return numero;}
-
-
     // Setters
     void setNiveau(const string& niveau) { this->niveau = niveau; }
     void setDelegue(Delegue* deleguePtr) { groupeDelegue = deleguePtr; }
     void setNumero(int num){ this->numero = num;}
     // Methods
-
     void ajouterEtudiant( Etudiant* etudiant) {
         this->etudiants.push_back(etudiant);
     }
-
   void supprimerEtudiant( Etudiant* etudiant) {
        auto it = find(etudiants.begin(), etudiants.end(), etudiant);
        if(it != etudiants.end()){
@@ -1018,7 +922,6 @@ public:
   void supprimerEtudiants() {
         etudiants.clear();
     }
-
 void supprimerEtudiantParNiveau() {
         for(size_t i = 0; i < etudiants.size(); i++)
         {
@@ -1026,18 +929,14 @@ void supprimerEtudiantParNiveau() {
                 etudiants.erase(etudiants.begin() + i);
                 i--;
             }
-        }
-    }
-
+        }   }
     void supprimerEtudiantParId( string id) {
        for(size_t i = 0; i < etudiants.size(); i++){
         if(etudiants[i]->getIdEtudiant() == id){
             etudiants.erase(etudiants.begin() + i);
             break;
         }
-       }
-    }
-
+       }  }
  void supprimerEtudiantParMoyenne(float seul){
     for(size_t i = 0; i < etudiants.size(); i++)
        {
@@ -1064,8 +963,6 @@ void supprimerEtudiantParNiveau() {
             }
         }
         }
-
-
     void supprimerDateExamen(const Date& date){
      auto it = find( dateExamen.begin(), dateExamen.end(), date);
      if(it != dateExamen.end()){
@@ -1075,7 +972,6 @@ void supprimerEtudiantParNiveau() {
      }
     }
     void supprimerDateExamen(const matiere* mat){
-
      auto it = find( matieres.begin(), matieres.end(), mat);
      if(it != matieres.end()){
         dateExamen[it - matieres.begin()].day  = 0;
@@ -1085,7 +981,6 @@ void supprimerEtudiantParNiveau() {
      else
     {cout << "matiere n'existe pas" << endl;}
     }
-
     void ajouterMatiere(matiere* mat) {
         Date date;
         date.day = 0;
@@ -1094,7 +989,6 @@ void supprimerEtudiantParNiveau() {
         matieres.push_back(mat);
         dateExamen.push_back(date);
     }
-
      void supprimerMatiere(matiere* mat) {
       auto it = find( matieres.begin(), matieres.end(), mat);
      if(it != matieres.end()){
@@ -1102,37 +996,30 @@ void supprimerEtudiantParNiveau() {
         dateExamen.erase(dateExamen.begin() + (it - matieres.begin()));
      }
     }
-
  void supprimerMatieres() {
       matieres.clear();
       dateExamen.clear();
      }
-
     void afficher() const {
         cout << "Groupe - Niveau: " << niveau << ", Numero:" << numero <<endl;
-
             cout << "Delegue: " << groupeDelegue->getNom() << " "<< groupeDelegue->getPrenom()<< endl;
-
         cout << "Etudiants: ";
         for (const auto& etu : etudiants) {
             cout << etu->getNom() << " "<< etu->getPrenom()<< endl;
         }
         cout << endl;
-
 for(size_t i = 0; i < matieres.size(); i ++){
     cout << "Matiere:" << matieres[i]->getNom() << endl;
     cout << "Date Examen:" << dateExamen[i].day << "/" <<
     dateExamen[i].month << "/" << dateExamen[i].year <<  endl;
 }
     }
-
     void planifierEvenement(Date date) const {
         auto it = find(dateExamen.begin(), dateExamen.end(), date);
         if (it == dateExamen.end())
         { cout << "Evenement planifié." << endl;}
         else
         {cout << "il ya un examen ce jour" << endl;}
-
     }
     void changerDelegue(){
         if (groupeDelegue->getPerformance()< 5)
@@ -1140,7 +1027,6 @@ for(size_t i = 0; i < matieres.size(); i ++){
         else
         {cout << "il ya un bon delegue" << endl;}
     }
-
     float moyenne() {
     float sum = 0;
     for (size_t i = 0; i< etudiants.size(); i++)
@@ -1148,10 +1034,8 @@ for(size_t i = 0; i < matieres.size(); i ++){
         sum += etudiants[i]->moyenne();
     }
     moyenneGroupe =  sum / etudiants.size();
-
      return etudiants.empty() ? 0 : sum / etudiants.size();
 }
-
  int nbValidation() {
     int c = 0;
     for (size_t i = 0; i < etudiants.size(); i++) {
@@ -1177,7 +1061,6 @@ void saveToFile(const string& filename) const {
         cout << "Unable to open file for writing." << endl;
     }
 }
-
     // Load from file
     void loadFromFile(const string& filename) {
         ifstream file(filename);
@@ -1202,10 +1085,7 @@ friend istream& operator>>(istream& is, Groupe& groupe) {
     is >> groupe.niveau;
     return is;
 }
-
 };
-
-
 int chercher(string n1, string n2, vector<Administration*> admin)
 {
     for(size_t i = 0; i < admin.size(); i++){
@@ -1215,7 +1095,6 @@ int chercher(string n1, string n2, vector<Administration*> admin)
     }
     return -1;
 }
-
 int chercher(string n1, string n2, vector<Enseignant*> admin)
 {
     for(size_t i = 0; i < admin.size(); i++){
@@ -1235,7 +1114,6 @@ int chercher(string n1, string n2, vector<Etudiant*> admin)
     }
     return -1;
 }
-
 int chercher(string n1, int n2, vector<Groupe*> admin)
 {
     for(size_t i = 0; i < admin.size(); i++){
@@ -1245,7 +1123,15 @@ int chercher(string n1, int n2, vector<Groupe*> admin)
     }
     return -1;
 }
-
+int chercher(string n1,vector<matiere*> admin)
+{
+    for(size_t i = 0; i < admin.size(); i++){
+        if(admin[i]->getNom() == n1){
+            return i;
+        }
+    }
+    return -1;
+}
 void afficher(vector<Administration*> admin)
 {
     for(size_t i = 0; i < admin.size(); i++){
@@ -1282,28 +1168,37 @@ void afficher(vector<matiere*> admin)
         cout<<"*****************" <<endl;
     }
 }
-
-
+void supprimer(string n1, vector<matiere*> &admin) {
+    // Find the index of the matiere to remove
+    for (size_t i = 0; i < admin.size(); i++) {
+        if (admin[i]->getNom() == n1) { // Assuming getNom() is a method of matiere
+            admin.erase(admin.begin() + i); // Remove the matiere from the vector
+            cout << "Matiere " << n1 << " supprimée." << endl;
+            return; // Exit after removing
+        }
+    }
+    cout << "Matiere " << n1 << " n'existe pas." << endl; // If not found
+}
 int main() {
      int choix = 0;
      int choix2 = 0;
-     int j;
+     int j,i,x;
     string motdepasse = "0000";
-    string mp;
+    string mp, name, lastName;
     string name1;
     string name2;
+    string name3;
     float salaire;
     int nombre;
+    string matt;
       Date d1 ={1 ,1 , 2020};
       Date d2 ={14 ,12 , 2021};
-    
     Administration admin;
     Enseignant ens;
     Etudiant etud;
     Groupe grp;
     matiere mat;
     Delegue del;
-
 
      Administration admin1("B","Rabia",41 , 6666,"responsable", d1, 20000,"A1");
      admin1.saveToFile("admin1.txt");
@@ -1359,7 +1254,6 @@ int main() {
      deleg2.completerTache("creer group whatsapp");
      deleg2.completerTache("contacter les etudiants");
      deleg2.saveToFile("delegue2.txt");
-
 
 Groupe grp1("3IIR",1);
 grp1.ajouterEtudiant(&etud1);
@@ -1448,10 +1342,9 @@ if(mp == motdepasse){
    cout << "16.Ajouter Un Etudiant" << endl;
    cout << "17.Ajouter Un groupe" << endl;
    cout << "18.Ajouter Une matiere" << endl;
-  
    cout << "19.Ajouter Un delegue" << endl;
    cout << "20.Ajouter Une matiere a un enseignant" << endl;
-   cout << "21.Ajouter Une matiere a un groupe" << endl;
+   cout << "21.Ajouter Une matiere a un groupe" << endl;   
    cout << "22.Assigner Un niveau a un enseignant" << endl;
    cout << "23.Ajouter Un Etudiant a un Groupe" << endl;
    cout << "24.Supprimer Une matiere" << endl;
@@ -1465,7 +1358,6 @@ if(mp == motdepasse){
    cout << "32.Supprimer Un Etudiant dans un groupe par son Niveau" << endl;
    cout << "33.Supprimer Un Etudiant dans un groupe par son moyenne" << endl;
  
-
    cout << "34.Quitter" << endl;
    cout << "votre choix:"<< endl;
    cout << "*************************"<< endl;
@@ -1664,6 +1556,11 @@ cout <<"Niveau:" << endl;
         grp.afficher();
         break;
     case 18:
+         cin >> mat;
+        matieres.push_back(&mat);
+        mat.afficher();
+        break; 
+    case 19:
         cout<<"Nom d'etudiant:" << endl;
         cin >> name1;
         cout<<"Presom d'etudiant:" << endl;
@@ -1672,63 +1569,268 @@ cout <<"Niveau:" << endl;
         if( j != -1){
             del.setNom(etudiants[j]->getNom());
             del.setPrenom(etudiants[j]->getPrenom());
-            del.setAge() = etudiants[j]->getAge();
-            del.setNumeroTele() = etudiants[j]->getNumeroTele();
-            del.setIdEtudiant() = etudiants[j]->getIdEtudiant();
-            del.setNiveau() = etudiants[j]->getNiveau();
-            del.setAnneeInscription() = etudiants[j]->getAnneeInscription();
-            cin >> mat;
-            matieres.push_back(&mat);
-            del.afficher();
+            del.setAge(etudiants[j]->getAge());
+            del.setNumeroTele(etudiants[j]->getNumeroTele());
+            del.setIdEtudiant(etudiants[j]->getIdEtudiant());
+            del.setNiveau(etudiants[j]->getNiveau());
+            del.setAnneeInscription(etudiants[j]->getAnneeInscription());
+            del.setNotes(etudiants[j]->getNotes());
+            del.setAbsence(etudiants[j]->getAbsence());
+            del.setMatieres(etudiants[j]->getMatieres());
+             cin >> del;
+        delegues.push_back(&del);
+        del.afficher();    
         }
-         cin >> ens;
-        enseignants.push_back(&ens);
-        ens.afficher(); 
-        break; 
-    case 19:
-        cout << "quitter" << endl;
+        else{
+        cout<<"etudiant n'existe pas"<<endl;
+        }
         break;
     case 20:
-        cout << "quitter" << endl;
+         cout << "matiere:" << endl;
+        cin >> matt;
+        cout << "Nom:" << endl;
+        cin >> name1;
+        cout << "Prenom:" << endl;
+        cin >> name2;
+        j = chercher(name1, name2, enseignants);
+        if( j != -1){
+         i = chercher(matt, matieres);
+         if( i == -1){
+            mat.setNom(matt);
+            mat.setEnseignantResp(enseignants[j]);
+            matieres.push_back(&mat);
+         }
+         else{
+            matieres[i]->setEnseignantResp(enseignants[j]);
+         }
+         enseignants[j]->ajouterMatiere(matt);
+        }
+        else{
+            cout << "Enseignant n'exist pas" << endl;
+        }
         break;
     case 21:
-        cout << "quitter" << endl;
+           cout << "matiere:" << endl;
+        cin >> matt;
+        cout << "Niveau:" << endl;
+        cin >> name1;
+        cout << "Numero:" << endl;
+        cin >> nombre;
+        j = chercher(name1, nombre, groupes);
+        if( j != -1){
+         i = chercher(matt, matieres);
+         if( i == -1){
+            mat.setNom(matt);
+            mat.setEnseignantResp(nullptr);
+            matieres.push_back(&mat);
+         }
+    
+         groupes[j]->ajouterMatiere(&mat);
+         for(size_t z = 0; z < groupes[j]->getEtudiants().size(); z++){
+            groupes[j]->getEtudiants()[z]->ajouterMatiere(matt, 0);
+         }
+        }
+        else{
+            cout << "Groupe n'exist pas" << endl;
+        }
         break;
     case 22:
-        cout << "quitter" << endl;
+          cout << "niveau:" << endl;
+        cin >> matt;
+        cout << "Nom:" << endl;
+        cin >> name1;
+        cout << "Prenom:" << endl;
+        cin >> name2;
+        j = chercher(name1, name2, enseignants);
+        if( j != -1){  
+         enseignants[j]->ajouterMatiere(matt);
+        }
+        else{
+            cout << "Enseignant n'exist pas" << endl;
+        }
         break;
     case 23:
-        cout << "quitter" << endl;
+        cout << "Nom:" << endl;
+        cin >> name1;
+        cout << "Prenom:" << endl;
+        cin >> name2;
+        cout << "Niveau:" << endl;
+        cin >> name3;
+        cout << "Numero:" << endl;
+        cin >> nombre;
+
+        i = chercher(name1, name2, etudiants);
+        j = chercher(name3, nombre, groupes);
+       if(i != -1){
+         if(j != -1){
+            groupes[j]->ajouterEtudiant(etudiants[i]);
+         }
+         else
+         {cout << "Groupe n'exist pas" << endl;}
+       }
+       else
+      { cout << "Etudiant n'exist pas" << endl;}
+
         break;
     case 24:
-        cout << "quitter" << endl;
+        cout << "Nom" << endl;
+        cin >> name1;
+        i = chercher(name1, matieres);
+        for(size_t z = 0; z < enseignants.size(); z++){
+            enseignants[z]->supprimerMatiere(name1);
+        }
+if(i != -1){
+        for(size_t z = 0; z < groupes.size(); z++){
+            groupes[z]->supprimerMatiere(matieres[i]);
+            for(size_t k = 0; k < groupes[z]->getEtudiants().size(); k++){
+                groupes[z]->getEtudiants()[k]->supprimerMatiere(name1);
+            }
+        }
+        }
+        supprimer(name1, matieres);
         break;
     case 25:
-        cout << "quitter" << endl;
+         cout << "Nom de matiere" << endl;
+        cin >> name1;
+         cout << "Nom de l'enseignant" << endl;
+        cin >> name2;
+         cout << "Prenom de l'enseignant" << endl;
+        cin >> name3;
+
+        i = chercher(name2,name3, enseignants);
+        if(i != -1){
+            enseignants[i]->supprimerMatiere(name1);
+        }
+      else{
+        cout << "Enseignant n'exist pas" << endl;
+      }
+
         break;    
     case 26:
-        cout << "quitter" << endl;
+         cout << "Nom de matiere" << endl;
+        cin >> name1;
+         cout << "Niveau" << endl;
+        cin >> name2;
+         cout << "Numero" << endl;
+        cin >> nombre;
+        i = chercher(name2, nombre, groupes);
+        if(i != -1){
+            j = chercher(name1, matieres);
+            if(j != -1){
+                groupes[i]->supprimerMatiere(matieres[j]);
+            }
+            
+        }else
+        {cout << "Groupe n'exist pas" << endl;}
+
         break;
     case 27:
-        cout << "quitter" << endl;
+        cout << "Niveau" << endl;
+        cin >> name2;
+         cout << "Numero" << endl;
+        cin >> nombre;
+        i = chercher(name2, nombre, groupes);
+        if(i != -1){
+            groupes[i]->supprimerMatieres();
+        }
+        else
+        {cout << "Groupe n'exist pas" << endl;}
         break;
     case 28:
-        cout << "quitter" << endl;
+         cout << "Niveau:" << endl;
+        cin >> matt;
+        cout << "Nom:" << endl;
+        cin >> name1;
+        cout << "Prenom:" << endl;
+        cin >> name2;
+        j = chercher(name1, name2, enseignants);
+        if( j != -1){
+            enseignants[j]->supprimerNiveau(matt);
+        }
+        else{
+            cout << "Enseignant n'exist pas" << endl;
+        }
         break;
     case 29:
-        cout << "quitter" << endl;
+        cout << "Niveau:" << endl;
+        cin >> name1;
+        cout << "Numero:" << endl;
+        cin >> nombre;
+        cout << "Nom:" << endl;
+        cin >> name2;
+        cout << "Prenom:" << endl;
+        cin >> name3;
+        j = chercher(name2, name3, etudiants);
+        i = chercher(name1, nombre, groupes);
+        if( i != -1){
+            if(j != -1){
+                groupes[i]->supprimerEtudiant(etudiants[j]);
+            }
+            else{
+                cout << "Etudiant n'exist pas" << endl;
+            }
+        }
+        else{
+            cout << "Groupe n'exist pas" << endl;
+        }
         break;
     case 30:
-        cout << "quitter" << endl;
+         cout << "Niveau:" << endl;
+        cin >> name1;
+        cout << "Numero:" << endl;
+        cin >> nombre;
+        i = chercher(name1, nombre, groupes);
+        if( i != -1){
+            groupes[i]->supprimerEtudiants();
+        }
+         else{
+            cout << "Groupe n'exist pas" << endl;
+        }
         break; 
     case 31:
-        cout << "quitter" << endl;
+        cout << "Niveau:" << endl;
+        cin >> name1;
+        cout << "Numero:" << endl;
+        cin >> nombre;
+        cout <<"Id: " << endl;
+        cin >> name2;
+        i = chercher(name1, nombre, groupes);
+        if( i != -1){
+            groupes[i]->supprimerEtudiantParId(name2);
+        }
+         else{
+            cout << "Groupe n'exist pas" << endl;
+        }
         break;
     case 32:
-        cout << "quitter" << endl;
+        cout << "Niveau de groupe:" << endl;
+        cin >> name1;
+        cout << "Numero:" << endl;
+        cin >> nombre;
+        cout <<"Niveau d'etudiant: " << endl;
+        cin >> name2;
+        i = chercher(name1, nombre, groupes);
+        if( i != -1){
+            groupes[i]->supprimerEtudiantParId(name2);
+        }
+         else{
+            cout << "Groupe n'exist pas" << endl;
+        }
         break;
     case 33:
-        cout << "quitter" << endl;
+         cout << "Niveau de groupe:" << endl;
+        cin >> name1;
+        cout << "Numero:" << endl;
+        cin >> nombre;
+        cout <<"Moyenne: " << endl;
+        cin >> salaire;
+        i = chercher(name1, nombre, groupes);
+        if( i != -1){
+            groupes[i]->supprimerEtudiantParMoyenne(salaire);
+        }
+         else{
+            cout << "Groupe n'exist pas" << endl;
+        }
         break;
     case 34:
         cout << "quitter" << endl;
@@ -1745,7 +1847,506 @@ else{
 }
    }
    else if(choix == 2){
+cout << "mode admin" << endl;
+cout << "entrer le mot de passe" << endl;
+cin >> mp;
+if(mp == motdepasse){
+    while(choix2 != 34){
+        while(x == -1){
+     cout <<"Votre nom" <<endl;
+     cin >> name;
+     cout <<"Votre prenom" <<endl;
+     cin >> lastName;
+     x = chercher(name, lastName, enseignants);
+     if(x == -1){
+        cout << "vous n'etes pas enseignant" << endl;
+     }
+        }
+     
+     cout << "*************************"<< endl;
+   cout << "Menu:" << endl;
+  
+   cout << "1.Prendre Vacances" << endl;
+   cout << "2.Afficher les admins" << endl;
+   cout << "3.Afficher les enseignants" << endl;
+   cout << "4.Afficher les Etudiants" << endl;
+   cout << "5.Afficher les groupes" << endl;
+   cout << "6.Afficher un groupe" << endl;
+   cout << "7.Afficher les matieres" << endl;
+   cout << "8.Afficher specifiquement" << endl;
+   cout << "9.Afficher le nombre de validation dans un groupe" << endl;
+   cout << "10.Afficher moyenne d'un etudiant" << endl;
+   cout << "11.Afficher resultat final d'un etudiant" << endl;
+   cout << "12.Afficher l'absence total d'un etudiant" << endl;
+   cout << "13.Afficher moyenne d'un groupe" << endl;
+   cout << "14.Ajouter Un delegue" << endl;
 
+   cout << ".Ajouter Une date d'examen" << endl;
+  
+   cout << ".Supprimer date d'examen" << endl;
+   cout << ".Supprimer date d'examen par matiere" << endl;
+   
+   cout << ".Incrementer l'absence d'un etudiant" << endl;
+   cout << ".Planifier un evenement" << endl;
+   cout << ".Changer delegue" << endl;
+  
+ 
+   cout << "34.Quitter" << endl;
+   cout << "votre choix:"<< endl;
+   cout << "*************************"<< endl;
+   cin >> choix2;
+   
+   switch (choix2)
+   {
+    
+    case 1:
+        cout << "prendre des vacances" << endl;
+          cout << "nom:" << endl;
+        cin >> name1;
+        cout << "prénom:" << endl;
+        cin >> name2;
+        cout << "Entrer le nombre des jours:" << endl;
+        cin >> nombre;
+
+        j = chercher(name1, name2, admins);
+        if(j != -1){
+           admins[j]->prendreVacances(nombre);
+        }
+        else{
+            j = chercher(name1, name2, enseignants);
+             if( j != -1){
+                enseignants[j]->prendreVacances(nombre);
+            }
+            else{
+                cout << "ce personne n'existe pas" << endl;
+            }
+        }
+        break;
+    case 2:
+        cout << "Affichage les admins:" << endl;
+        afficher(admins);
+        break;
+    case 3:
+        cout << "Affichage les enseignants:" << endl;
+        afficher(enseignants);
+        break;
+    case 4:
+        cout << "Affichage les Etudiants:" << endl;
+        afficher(etudiants);
+        break;
+    case 5:
+     cout << "Affichage les groupes:" << endl;
+        afficher(groupes);
+        break;
+    case 6:
+    cout <<"Niveau:" << endl;
+        cin >> name1;
+        cout <<"Numero:" << endl;
+        cin >> nombre;
+        j = chercher(name1, nombre, groupes);
+        if(j != -1){
+           groupes[j]->afficher();
+        }
+        else{
+            cout << "ce groupe n'existe pas" << endl;
+        }
+    break;  
+    case 7:
+     cout << "Affichage les matieres:" << endl;
+        afficher(matieres);
+        break;
+
+    case 8:
+    cout << "Affichage de:" << endl;
+     cout << "nom:" << endl;
+        cin >> name1;
+        cout << "prénom:" << endl;
+        cin >> name2;
+
+         j = chercher(name1, name2, admins);
+        if(j != -1){
+           cout << "admin" << endl;
+           admins[j]->afficher();
+        }
+        else{
+            j = chercher(name1, name2, enseignants);
+             if( j != -1){
+               cout<<" enseignant"<< endl;
+                enseignants[j]->afficher();
+            }
+            else{
+                j = chercher(name1, name2, etudiants);
+                if( j != -1){
+               cout<<" etudiant"<< endl;
+                etudiants[j]->afficher();
+            }
+            else{
+                cout << "ce personne n'existe pas" << endl;}
+            }
+        }
+        break;
+        
+    case 9:
+cout <<"Niveau:" << endl;
+        cin >> name1;
+        cout <<"Numero:" << endl;
+        cin >> nombre;
+       j = chercher(name1, nombre, groupes);
+             if( j != -1){
+               cout <<"Nombre de validation:" << groupes[j]->nbValidation() << endl;
+            }
+            else{
+                cout << "ce groupe n'existe pas" << endl;
+            }
+
+        break;
+   
+    case 10:
+    cout <<"Nom:" << endl;
+        cin >> name1;
+        cout <<"Prenom:" << endl;
+        cin >> name2;
+       j = chercher(name1, name2, etudiants);
+   if(j != -1)
+   {
+    cout << "Moyenne:" << etudiants[j]->moyenne() << endl;
+   }
+   else
+   {cout << "Etudiant n'existe pas" << endl;}
+   
+    break;
+     case 11:
+    cout <<"Nom:" << endl;
+        cin >> name1;
+        cout <<"Prenom:" << endl;
+        cin >> name2;
+       j = chercher(name1, name2, etudiants);
+   if(j != -1)
+   {
+    if(etudiants[j]->resultatFinale())
+    {cout << "Valide" << endl;}
+    else
+    {cout << "Non valide" << endl;}
+   }
+   else
+   {cout << "Etudiant n'existe pas" << endl;}
+   
+    break;
+   
+     case 12:
+    cout <<"Nom:" << endl;
+        cin >> name1;
+        cout <<"Prenom:" << endl;
+        cin >> name2;
+       j = chercher(name1, name2, etudiants);
+   if(j != -1)
+   {
+    cout << "Absence total:" << etudiants[j]->absenceTotal() << endl;
+   }
+   else
+   {cout << "Etudiant n'existe pas" << endl;}
+   
+    break;
+     case 13:
+cout <<"Niveau:" << endl;
+        cin >> name1;
+        cout <<"Numero:" << endl;
+        cin >> nombre;
+       j = chercher(name1, nombre, groupes);
+             if( j != -1){
+               cout <<"Moyenne general:" << groupes[j]->moyenne() << endl;
+            }
+            else{
+                cout << "ce groupe n'existe pas" << endl;
+            }
+
+        break;
+    case 14:
+        cout<<"Nom d'etudiant:" << endl;
+        cin >> name1;
+        cout<<"Presom d'etudiant:" << endl;
+        cin >> name2;
+        j = chercher(name1, name2, etudiants);
+        if( j != -1){
+            del.setNom(etudiants[j]->getNom());
+            del.setPrenom(etudiants[j]->getPrenom());
+            del.setAge(etudiants[j]->getAge());
+            del.setNumeroTele(etudiants[j]->getNumeroTele());
+            del.setIdEtudiant(etudiants[j]->getIdEtudiant());
+            del.setNiveau(etudiants[j]->getNiveau());
+            del.setAnneeInscription(etudiants[j]->getAnneeInscription());
+            del.setNotes(etudiants[j]->getNotes());
+            del.setAbsence(etudiants[j]->getAbsence());
+            del.setMatieres(etudiants[j]->getMatieres());
+             cin >> del;
+        delegues.push_back(&del);
+        del.afficher();    
+        }
+        else{
+        cout<<"etudiant n'existe pas"<<endl;
+        }
+        break;
+   
+    case 20:
+         cout << "matiere:" << endl;
+        cin >> matt;
+        cout << "Nom:" << endl;
+        cin >> name1;
+        cout << "Prenom:" << endl;
+        cin >> name2;
+        j = chercher(name1, name2, enseignants);
+        if( j != -1){
+         i = chercher(matt, matieres);
+         if( i == -1){
+            mat.setNom(matt);
+            mat.setEnseignantResp(enseignants[j]);
+            matieres.push_back(&mat);
+         }
+         else{
+            matieres[i]->setEnseignantResp(enseignants[j]);
+         }
+         enseignants[j]->ajouterMatiere(matt);
+        }
+        else{
+            cout << "Enseignant n'exist pas" << endl;
+        }
+        break;
+    case 21:
+           cout << "matiere:" << endl;
+        cin >> matt;
+        cout << "Niveau:" << endl;
+        cin >> name1;
+        cout << "Numero:" << endl;
+        cin >> nombre;
+        j = chercher(name1, nombre, groupes);
+        if( j != -1){
+         i = chercher(matt, matieres);
+         if( i == -1){
+            mat.setNom(matt);
+            mat.setEnseignantResp(nullptr);
+            matieres.push_back(&mat);
+         }
+    
+         groupes[j]->ajouterMatiere(&mat);
+         for(size_t z = 0; z < groupes[j]->getEtudiants().size(); z++){
+            groupes[j]->getEtudiants()[z]->ajouterMatiere(matt, 0);
+         }
+        }
+        else{
+            cout << "Groupe n'exist pas" << endl;
+        }
+        break;
+    case 22:
+          cout << "niveau:" << endl;
+        cin >> matt;
+        cout << "Nom:" << endl;
+        cin >> name1;
+        cout << "Prenom:" << endl;
+        cin >> name2;
+        j = chercher(name1, name2, enseignants);
+        if( j != -1){  
+         enseignants[j]->ajouterMatiere(matt);
+        }
+        else{
+            cout << "Enseignant n'exist pas" << endl;
+        }
+        break;
+    case 23:
+        cout << "Nom:" << endl;
+        cin >> name1;
+        cout << "Prenom:" << endl;
+        cin >> name2;
+        cout << "Niveau:" << endl;
+        cin >> name3;
+        cout << "Numero:" << endl;
+        cin >> nombre;
+
+        i = chercher(name1, name2, etudiants);
+        j = chercher(name3, nombre, groupes);
+       if(i != -1){
+         if(j != -1){
+            groupes[j]->ajouterEtudiant(etudiants[i]);
+         }
+         else
+         {cout << "Groupe n'exist pas" << endl;}
+       }
+       else
+      { cout << "Etudiant n'exist pas" << endl;}
+
+        break;
+    case 24:
+        cout << "Nom" << endl;
+        cin >> name1;
+        i = chercher(name1, matieres);
+        for(size_t z = 0; z < enseignants.size(); z++){
+            enseignants[z]->supprimerMatiere(name1);
+        }
+if(i != -1){
+        for(size_t z = 0; z < groupes.size(); z++){
+            groupes[z]->supprimerMatiere(matieres[i]);
+            for(size_t k = 0; k < groupes[z]->getEtudiants().size(); k++){
+                groupes[z]->getEtudiants()[k]->supprimerMatiere(name1);
+            }
+        }
+        }
+        supprimer(name1, matieres);
+        break;
+    case 25:
+         cout << "Nom de matiere" << endl;
+        cin >> name1;
+         cout << "Nom de l'enseignant" << endl;
+        cin >> name2;
+         cout << "Prenom de l'enseignant" << endl;
+        cin >> name3;
+
+        i = chercher(name2,name3, enseignants);
+        if(i != -1){
+            enseignants[i]->supprimerMatiere(name1);
+        }
+      else{
+        cout << "Enseignant n'exist pas" << endl;
+      }
+
+        break;    
+    case 26:
+         cout << "Nom de matiere" << endl;
+        cin >> name1;
+         cout << "Niveau" << endl;
+        cin >> name2;
+         cout << "Numero" << endl;
+        cin >> nombre;
+        i = chercher(name2, nombre, groupes);
+        if(i != -1){
+            j = chercher(name1, matieres);
+            if(j != -1){
+                groupes[i]->supprimerMatiere(matieres[j]);
+            }
+            
+        }else
+        {cout << "Groupe n'exist pas" << endl;}
+
+        break;
+    case 27:
+        cout << "Niveau" << endl;
+        cin >> name2;
+         cout << "Numero" << endl;
+        cin >> nombre;
+        i = chercher(name2, nombre, groupes);
+        if(i != -1){
+            groupes[i]->supprimerMatieres();
+        }
+        else
+        {cout << "Groupe n'exist pas" << endl;}
+        break;
+    case 28:
+         cout << "Niveau:" << endl;
+        cin >> matt;
+        cout << "Nom:" << endl;
+        cin >> name1;
+        cout << "Prenom:" << endl;
+        cin >> name2;
+        j = chercher(name1, name2, enseignants);
+        if( j != -1){
+            enseignants[j]->supprimerNiveau(matt);
+        }
+        else{
+            cout << "Enseignant n'exist pas" << endl;
+        }
+        break;
+    case 29:
+        cout << "Niveau:" << endl;
+        cin >> name1;
+        cout << "Numero:" << endl;
+        cin >> nombre;
+        cout << "Nom:" << endl;
+        cin >> name2;
+        cout << "Prenom:" << endl;
+        cin >> name3;
+        j = chercher(name2, name3, etudiants);
+        i = chercher(name1, nombre, groupes);
+        if( i != -1){
+            if(j != -1){
+                groupes[i]->supprimerEtudiant(etudiants[j]);
+            }
+            else{
+                cout << "Etudiant n'exist pas" << endl;
+            }
+        }
+        else{
+            cout << "Groupe n'exist pas" << endl;
+        }
+        break;
+    case 30:
+         cout << "Niveau:" << endl;
+        cin >> name1;
+        cout << "Numero:" << endl;
+        cin >> nombre;
+        i = chercher(name1, nombre, groupes);
+        if( i != -1){
+            groupes[i]->supprimerEtudiants();
+        }
+         else{
+            cout << "Groupe n'exist pas" << endl;
+        }
+        break; 
+    case 31:
+        cout << "Niveau:" << endl;
+        cin >> name1;
+        cout << "Numero:" << endl;
+        cin >> nombre;
+        cout <<"Id: " << endl;
+        cin >> name2;
+        i = chercher(name1, nombre, groupes);
+        if( i != -1){
+            groupes[i]->supprimerEtudiantParId(name2);
+        }
+         else{
+            cout << "Groupe n'exist pas" << endl;
+        }
+        break;
+    case 32:
+        cout << "Niveau de groupe:" << endl;
+        cin >> name1;
+        cout << "Numero:" << endl;
+        cin >> nombre;
+        cout <<"Niveau d'etudiant: " << endl;
+        cin >> name2;
+        i = chercher(name1, nombre, groupes);
+        if( i != -1){
+            groupes[i]->supprimerEtudiantParId(name2);
+        }
+         else{
+            cout << "Groupe n'exist pas" << endl;
+        }
+        break;
+    case 33:
+         cout << "Niveau de groupe:" << endl;
+        cin >> name1;
+        cout << "Numero:" << endl;
+        cin >> nombre;
+        cout <<"Moyenne: " << endl;
+        cin >> salaire;
+        i = chercher(name1, nombre, groupes);
+        if( i != -1){
+            groupes[i]->supprimerEtudiantParMoyenne(salaire);
+        }
+         else{
+            cout << "Groupe n'exist pas" << endl;
+        }
+        break;
+    case 34:
+        cout << "quitter" << endl;
+        break;
+    default:
+        cout << "choix invalide" << endl;
+        break;
+   }
+   }
+
+}
+else{
+    cout << "mot de passe incorrect" << endl;
+}
    }
      else if(choix == 3){
 
@@ -1759,3 +2360,4 @@ else{
  }
     return 0;
 }
+
