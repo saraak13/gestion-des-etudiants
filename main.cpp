@@ -245,6 +245,10 @@ public:
     is >> enseignant.idEnseignant;
     cout << "Enter Salaire: ";
     is >> enseignant.salaire;
+    cout << "Enter Date de recrutement (day, mounth, year): ";
+    is >> enseignant.dateRecrutement.day >> enseignant.dateRecrutement.month >> enseignant.dateRecrutement.year ;
+    enseignant.vacances = 60;
+
     return is;
 }
 };
@@ -448,6 +452,12 @@ else{
             cout << "Unable to open file for writing." << endl;
         }
     }
+    void afficherNotes() const {
+        for (size_t i = 0; i < notes.size(); i++) {
+            cout << "note de " << matieres[i] <<": "<< notes[i] << endl;
+            cout << "absence: "<< absence[i] << endl;
+        }
+    }
     // Load from file
     void loadFromFile(const string& filename) {
         ifstream file(filename);
@@ -588,12 +598,16 @@ void afficher() const {
     void avertissement(const Etudiant& etudiant) {
     if (etudiant.moyenne() < 10 || etudiant.absenceTotal() > 10) {
         cout << "Avertissement à " << etudiant.getNom() << endl;
-    }
+    }else {
+    cout << "Pas d'Avertissement à " << etudiant.getNom() << endl;}
+
 }
 void bonus(const Etudiant& etudiant) {
     if (etudiant.moyenne() > 18 && etudiant.absenceTotal() < 10) {
         cout << "Bonus à " << etudiant.getNom() << endl;
     }
+    else {
+    cout << "Pas de Bonus à " << etudiant.getNom() << endl;}
 }
     void prendreVacances(int days) {
     if (days <= vacances) {
@@ -791,7 +805,13 @@ void supprimerTachesComplete(){
         cout << "Performance: " << performance << endl;
         cout << "Tasks: " << endl;
         for(size_t i = 0; i < tasks.size(); i++){
-            cout << tasks[i] << endl;
+            cout << tasks[i] << ":";
+            if(taskComplete[i] == true){
+                cout << "Completed" << endl;
+            }
+            else{
+                cout << "Not Completed" << endl;
+            }
         }
     }
      // Save to file
@@ -1083,6 +1103,14 @@ friend istream& operator>>(istream& is, Groupe& groupe) {
     is >> groupe.numero;
     cout << "Enter Niveau: ";
     is >> groupe.niveau;
+
+
+// Allocate memory for groupe.groupeDelegue
+groupe.groupeDelegue = new Delegue(); 
+
+// Optionally, you can also read values into groupe.groupeDelegue here
+// e.g., is >> *groupe.groupeDelegue; // Assuming Delegue has an overloaded operator>>
+    
     return is;
 }
 };
@@ -1114,6 +1142,17 @@ int chercher(string n1, string n2, vector<Etudiant*> admin)
     }
     return -1;
 }
+
+int chercher(string n1, string n2, vector<Delegue*> admin)
+{
+    for(size_t i = 0; i < admin.size(); i++){
+        if(admin[i]->getNom() == n1 && admin[i]->getPrenom() == n2){
+            return i;
+        }
+    }
+    return -1;
+}
+
 int chercher(string n1, int n2, vector<Groupe*> admin)
 {
     for(size_t i = 0; i < admin.size(); i++){
@@ -1132,6 +1171,19 @@ int chercher(string n1,vector<matiere*> admin)
     }
     return -1;
 }
+
+int chercherGroupeParEtudiant(string n1,string n2,vector<Groupe*> admin)
+{
+    for(size_t i = 0; i < admin.size(); i++){
+        for(size_t z = 0; z < admin[i]->getEtudiants().size(); z++){
+            if(admin[i]->getEtudiants()[z]->getNom() == n1 && admin[i]->getEtudiants()[z]->getPrenom() == n2){
+                return i;
+            }
+        }
+    }
+    return -1;
+}
+
 void afficher(vector<Administration*> admin)
 {
     for(size_t i = 0; i < admin.size(); i++){
@@ -1179,6 +1231,8 @@ void supprimer(string n1, vector<matiere*> &admin) {
     }
     cout << "Matiere " << n1 << " n'existe pas." << endl; // If not found
 }
+
+
 int main() {
      int choix = 0;
      int choix2 = 0;
@@ -1200,46 +1254,46 @@ int main() {
     matiere mat;
     Delegue del;
 
-     Administration admin1("B","Rabia",41 , 6666,"responsable", d1, 20000,"A1");
+     Administration admin1("boughaba","rabia",41 , 6666,"responsable", d1, 20000,"A1");
      admin1.saveToFile("admin1.txt");
-     Administration admin2("A","Anas",31 , 6999,"technique", d2, 10000,"A2");
+     Administration admin2("amrani","anas",31 , 6999,"technique", d2, 10000,"A2");
      admin2.saveToFile("admin2.txt");
 
-      Enseignant ens1("B","nisrine",29 , 6666, d1, 30000,"T1");
+      Enseignant ens1("abaru","nisrine",29 , 6666, d1, 30000,"T1");
       ens1.ajouterMatiere("P.O.O");
-      ens1.ajouterMatiere("System d'exploitation");
+      ens1.ajouterMatiere("system d'exploitation");
       ens1.assignerNiveau("3IIR");
       ens1.assignerNiveau("2AP");
      ens1.saveToFile("enseignant1.txt");
-      Enseignant ens2("A","jamal",31 , 6999, d2, 30000,"T2");
+      Enseignant ens2("alaoui","jamal",31 , 6999, d2, 30000,"T2");
      ens2.ajouterMatiere("PHP");
      ens2.assignerNiveau("3IIR");
      ens2.saveToFile("enseignant2.txt");
 
      matiere mat1("P.O.O",&ens1);
      mat1.saveToFile("matiere1.txt");
-     matiere mat2("System d'exploitation",&ens1);
+     matiere mat2("system d'exploitation",&ens1);
      mat2.saveToFile("matiere2.txt");
      matiere mat3("PHP",&ens2);
      mat3.saveToFile("matiere3.txt");
 
-     Etudiant etud1("Boughaba", "jihan", 21, 61111, "S1","3IIR",d1);
+     Etudiant etud1("boughaba", "jihan", 21, 61111, "S1","3IIR",d1);
      etud1.ajouterMatiere("P.O.O", 12);
      etud1.ajouterMatiere("PHP", 14);
      etud1.saveToFile("etudiant1.txt");
-     Etudiant etud2("Akrouh", "Sara", 20, 61112, "S2","3IIR",d1);
-     etud2.ajouterMatiere("P.O.O", 15);
-     etud2.ajouterMatiere("PHP", 14);
+     Etudiant etud2("akrouh", "sara", 20, 61112, "S2","3IIR",d1);
+     etud2.ajouterMatiere("P.O.O", 19);
+     etud2.ajouterMatiere("PHP", 19);
      etud2.saveToFile("etudiant2.txt");
-     Etudiant etud3("Morabit", "Nahla", 21, 61113, "S3","3IIR",d1);
+     Etudiant etud3("morabit", "nahla", 21, 61113, "S3","3IIR",d1);
      etud3.ajouterMatiere("P.O.O", 17);
      etud3.ajouterMatiere("PHP", 16);
      etud3.saveToFile("etudiant3.txt");
-     Etudiant etud4("Berkani", "Samir", 19, 61114, "S4","2AP",d2);
-     etud4.ajouterMatiere("System d'exploitation", 14);
+     Etudiant etud4("berkani", "samir", 19, 61114, "S4","2AP",d2);
+     etud4.ajouterMatiere("system d'exploitation", 14);
      etud4.saveToFile("etudiant4.txt");
-     Etudiant etud5("Dkiouak", "Amal", 20, 61115, "S5","2AP",d2);
-     etud5.ajouterMatiere("System d'exploitation", 10);
+     Etudiant etud5("dkiouak", "amal", 20, 61115, "S5","2AP",d2);
+     etud5.ajouterMatiere("system d'exploitation", 10);
      etud5.saveToFile("etudiant5.txt");
 
      Delegue deleg1(&etud2,"D1", d1);
@@ -1307,76 +1361,74 @@ grp2.saveToFile("groupe2.txt");
 
    cout << "*************************"<< endl;
    cout << "Menu:" << endl;
-   cout << "1.Mode admin" << endl;
-   cout << "2.Mode enseignant" << endl;
-   cout << "3.Mode etudiant" << endl;
-   cout << "4.Mode delegue" << endl;
+   cout << "1.Mode Admin" << endl;
+   cout << "2.Mode Enseignant" << endl;
+   cout << "3.Mode Delegue" << endl;
+   cout << "4.Mode Etudiant" << endl;
    cout << "5.Quitter" << endl;
-   cout << "votre choix:"<< endl;
+   cout << "Votre Choix:"<< endl;
    cout << "*************************"<< endl;
 
    cin >> choix;
    if(choix == 1){
-cout << "mode admin" << endl;
-cout << "entrer le mot de passe" << endl;
+cout << "Mode Admin" << endl;
+cout << "Entrer Le Mot De Passe" << endl;
 cin >> mp;
 if(mp == motdepasse){
     while(choix2 != 34){
      cout << "*************************"<< endl;
    cout << "Menu:" << endl;
-   cout << "1.Changer mot de passe" << endl;
-   cout << "2.Augmenter Salaire Par Annees de Travail" << endl;
+   cout << "1.Changer Mot De Passe" << endl;
+   cout << "2.Augmenter Salaire Par Annees De Travail" << endl;
    cout << "3.Update Salaire" << endl;
    cout << "4.Avertir Un Etudiant" << endl;
    cout << "5.Donne Bonus A Un Etudiant" << endl;
    cout << "6.Prendre Vacances" << endl;
-   cout << "7.Afficher les admins" << endl;
-   cout << "8.Afficher les enseignants" << endl;
-   cout << "9.Afficher les Etudiants" << endl;
-   cout << "10.Afficher les groupes" << endl;
-   cout << "11.Afficher les matieres" << endl;
-   cout << "12.Afficher specifiquement" << endl;
-   cout << "13.Afficher le nombre de validation dans un groupe" << endl;
-   cout << "14.Ajouter Un admin" << endl;
-   cout << "15.Ajouter Un enseignant" << endl;
+   cout << "7.Afficher Les Admins" << endl;
+   cout << "8.Afficher Les Enseignants" << endl;
+   cout << "9.Afficher Les Etudiants" << endl;
+   cout << "10.Afficher Les Groupes" << endl;
+   cout << "11.Afficher Les Matieres" << endl;
+   cout << "12.Afficher Specifiquement" << endl;
+   cout << "13.Afficher Le Nombre De Validation Dans Un Groupe" << endl;
+   cout << "14.Ajouter Un Admin" << endl;
+   cout << "15.Ajouter Un Enseignant" << endl;
    cout << "16.Ajouter Un Etudiant" << endl;
-   cout << "17.Ajouter Un groupe" << endl;
-   cout << "18.Ajouter Une matiere" << endl;
-   cout << "19.Ajouter Un delegue" << endl;
-   cout << "20.Ajouter Une matiere a un enseignant" << endl;
-   cout << "21.Ajouter Une matiere a un groupe" << endl;   
-   cout << "22.Assigner Un niveau a un enseignant" << endl;
-   cout << "23.Ajouter Un Etudiant a un Groupe" << endl;
-   cout << "24.Supprimer Une matiere" << endl;
-   cout << "25.Supprimer Une matiere d'un enseignant" << endl;
-   cout << "26.Supprimer Une matiere d'un Groupe" << endl;
-   cout << "27.Supprimer tous les matieres d'un Groupe" << endl;
-   cout << "28.Supprimer Un niveau d'un enseignant" << endl;
-   cout << "29.Supprimer Un Etudiant dans un groupe" << endl;
-   cout << "30.Supprimer tous les Etudiants dans un groupe" << endl;
-   cout << "31.Supprimer Un Etudiant dans un groupe par son id" << endl;
-   cout << "32.Supprimer Un Etudiant dans un groupe par son Niveau" << endl;
-   cout << "33.Supprimer Un Etudiant dans un groupe par son moyenne" << endl;
- 
+   cout << "17.Ajouter Un Groupe" << endl;
+   cout << "18.Ajouter Une Matiere" << endl;
+   cout << "19.Ajouter Un Delegue" << endl;
+   cout << "20.Ajouter Une Matiere A Un Enseignant" << endl;
+   cout << "21.Ajouter Une Matiere A Un Groupe" << endl;
+   cout << "22.Assigner Un Niveau A Un Enseignant" << endl;
+   cout << "23.Ajouter Un Etudiant A Un Groupe" << endl;
+   cout << "24.Supprimer Une Matiere" << endl;
+   cout << "25.Supprimer Une Matiere D'un Enseignant" << endl;
+   cout << "26.Supprimer Une Matiere D'un Groupe" << endl;
+   cout << "27.Supprimer Tous Les Matieres D'un Groupe" << endl;
+   cout << "28.Supprimer Un Niveau D'un Enseignant" << endl;
+   cout << "29.Supprimer Un Etudiant Dans Un Groupe" << endl;
+   cout << "30.Supprimer Tous Les Etudiants Dans Un Groupe" << endl;
+   cout << "31.Supprimer Un Etudiant Dans Un Groupe Par Son Id" << endl;
+   cout << "32.Supprimer Un Etudiant Dans Un Groupe Par Son Niveau" << endl;
+   cout << "33.Supprimer Un Etudiant Dans Un Groupe Par Son Moyenne" << endl;
    cout << "34.Quitter" << endl;
-   cout << "votre choix:"<< endl;
+   cout << "Votre Choix:"<< endl;
    cout << "*************************"<< endl;
    cin >> choix2;
-   
+
    switch (choix2)
    {
     case 1:
-        cout << "changement de mot de passe: "<< endl;
-        cout << "entrer le nouveau mot de passe" << endl;
+        cout << "Changement De Mot De Passe: "<< endl;
+        cout << "Entrer Le Nouveau Mot De Passe" << endl;
         cin >> mp;
         motdepasse = mp;
+        cout << "Mot De Passe Change Avec Succes" << endl;
         break;
     case 2:
-        cout << "augmentation de salaire a:" << endl;
-        cout << "nom:" << endl;
-        cin >> name1;
-        cout << "prénom:" << endl;
-        cin >> name2;
+        cout << "Augmentation De Salaire A:" << endl;
+        cout << "Nom, Prenom:" << endl;
+        cin >> name1 >> name2;
          j = chercher(name1, name2, admins);
         if(j != -1){
            admins[j]->AugmentationSalaireParAnnee();
@@ -1389,17 +1441,15 @@ if(mp == motdepasse){
                 enseignants[j]->afficher();
             }
             else{
-                cout << "ce personne n'existe pas" << endl;
+                cout << "Ce Personne N'existe Pas" << endl;
             }
         }
         break;
     case 3:
-        cout << "modification du salaire a:" << endl;
-        cout << "nom:" << endl;
-        cin >> name1;
-        cout << "prénom:" << endl;
-        cin >> name2;
-        cout << "Entrer le salaire:" << endl;
+        cout << "Modification Du Salaire A:" << endl;
+        cout << "Nom, Prenom:" << endl;
+        cin >> name1 >> name2;
+        cout << "Entrer Le Salaire:" << endl;
 
         cin >> salaire;
          j = chercher(name1, name2, admins);
@@ -1414,45 +1464,39 @@ if(mp == motdepasse){
                 enseignants[j]->afficher();
             }
             else{
-                cout << "ce personne n'existe pas" << endl;
+                cout << "Ce Personne N'existe Pas" << endl;
             }
         }
         break;
     case 4:
-        cout << "avertissement d'un etudiant:" << endl;
-         cout << "nom:" << endl;
-        cin >> name1;
-        cout << "prénom:" << endl;
-        cin >> name2;
+        cout << "Avertissement D'un Etudiant:" << endl;
+         cout << "Nom, Prenom:" << endl;
+        cin >> name1 >> name2;
         j = chercher(name1, name2, etudiants);
         if(j != -1){
            admins[j]->avertissement(*etudiants[j]);
         }
         else{
-            cout << "l'etudiant n'existe pas" << endl;
+            cout << "L'etudiant N'existe Pas" << endl;
         }
         break;
     case 5:
-        cout << "donner un bonus a un etudiant" << endl;
-        cout << "nom:" << endl;
-        cin >> name1;
-        cout << "prénom:" << endl;
-        cin >> name2;
+        cout << "Donner Un Bonus A Un Etudiant" << endl;
+        cout << "Nom, Prenom:" << endl;
+        cin >> name1 >> name2;
          j = chercher(name1, name2, etudiants);
         if(j != -1){
            admins[j]->bonus(*etudiants[j]);
         }
         else{
-            cout << "l'etudiant n'existe pas" << endl;
+            cout << "L'etudiant N'existe Pas" << endl;
         }
         break;
     case 6:
-        cout << "prendre des vacances" << endl;
-          cout << "nom:" << endl;
-        cin >> name1;
-        cout << "prénom:" << endl;
-        cin >> name2;
-        cout << "Entrer le nombre des jours:" << endl;
+        cout << "Prendre Des Vacances" << endl;
+          cout << "Nom, Prenom:" << endl;
+        cin >> name1 >> name2;
+        cout << "Entrer Le Nombre Des Jours:" << endl;
         cin >> nombre;
 
         j = chercher(name1, name2, admins);
@@ -1465,76 +1509,72 @@ if(mp == motdepasse){
                 enseignants[j]->prendreVacances(nombre);
             }
             else{
-                cout << "ce personne n'existe pas" << endl;
+                cout << "Ce Personne N'existe Pas" << endl;
             }
         }
         break;
     case 7:
-        cout << "Affichage les admins:" << endl;
+        cout << "Affichage Les Admins:" << endl;
         afficher(admins);
         break;
     case 8:
-        cout << "Affichage les enseignants:" << endl;
+        cout << "Affichage Les Enseignants:" << endl;
         afficher(enseignants);
         break;
     case 9:
-        cout << "Affichage les Etudiants:" << endl;
+        cout << "Affichage Les Etudiants:" << endl;
         afficher(etudiants);
         break;
     case 10:
-     cout << "Affichage les groupes:" << endl;
+     cout << "Affichage Les Groupes:" << endl;
         afficher(groupes);
         break;
     case 11:
-     cout << "Affichage les matieres:" << endl;
+     cout << "Affichage Les Matieres:" << endl;
         afficher(matieres);
         break;
     case 12:
-    cout << "Affichage de:" << endl;
-     cout << "nom:" << endl;
-        cin >> name1;
-        cout << "prénom:" << endl;
-        cin >> name2;
+    cout << "Affichage De:" << endl;
+     cout << "Nom, Prenom:" << endl;
+        cin >> name1 >> name2;
 
          j = chercher(name1, name2, admins);
         if(j != -1){
-           cout << "admin" << endl;
+           cout << "Admin:" << endl;
            admins[j]->afficher();
         }
         else{
             j = chercher(name1, name2, enseignants);
              if( j != -1){
-               cout<<" enseignant"<< endl;
+               cout<<" Enseignant:"<< endl;
                 enseignants[j]->afficher();
             }
             else{
                 j = chercher(name1, name2, etudiants);
                 if( j != -1){
-               cout<<" etudiant"<< endl;
+               cout<<" Etudiant:"<< endl;
                 etudiants[j]->afficher();
             }
             else{
-                cout << "ce personne n'existe pas" << endl;}
+                cout << "ce Personne N'existe Pas" << endl;}
             }
         }
         break;
-        
+
     case 13:
-cout <<"Niveau:" << endl;
-        cin >> name1;
-        cout <<"Numero:" << endl;
-        cin >> nombre;
+cout <<"Niveau, Numero:" << endl;
+        cin >> name1 >> nombre;
        j = chercher(name1, nombre, groupes);
              if( j != -1){
-               cout <<"Nombre de validation:" << groupes[j]->nbValidation() << endl;
+               cout <<"Nombre De Validation:" << groupes[j]->nbValidation() << endl;
             }
             else{
-                cout << "ce personne n'existe pas" << endl;
+                cout << "Ce Personne N'existe Pas" << endl;
             }
 
         break;
     case 14:
-        
+
         cin >> admin;
         admins.push_back(&admin);
         admin.afficher();
@@ -1559,12 +1599,10 @@ cout <<"Niveau:" << endl;
          cin >> mat;
         matieres.push_back(&mat);
         mat.afficher();
-        break; 
+        break;
     case 19:
-        cout<<"Nom d'etudiant:" << endl;
-        cin >> name1;
-        cout<<"Presom d'etudiant:" << endl;
-        cin >> name2;
+        cout<<"Nom Et Prenom D'etudiant:" << endl;
+        cin >> name1 >> name2;
         j = chercher(name1, name2, etudiants);
         if( j != -1){
             del.setNom(etudiants[j]->getNom());
@@ -1579,19 +1617,17 @@ cout <<"Niveau:" << endl;
             del.setMatieres(etudiants[j]->getMatieres());
              cin >> del;
         delegues.push_back(&del);
-        del.afficher();    
+        del.afficher();
         }
         else{
-        cout<<"etudiant n'existe pas"<<endl;
+        cout<<"Etudiant N'existe Pas"<<endl;
         }
         break;
     case 20:
-         cout << "matiere:" << endl;
+         cout << "Matiere:" << endl;
         cin >> matt;
-        cout << "Nom:" << endl;
-        cin >> name1;
-        cout << "Prenom:" << endl;
-        cin >> name2;
+        cout << "Nom, Prenom:" << endl;
+        cin >> name1 >> name2;
         j = chercher(name1, name2, enseignants);
         if( j != -1){
          i = chercher(matt, matieres);
@@ -1599,23 +1635,24 @@ cout <<"Niveau:" << endl;
             mat.setNom(matt);
             mat.setEnseignantResp(enseignants[j]);
             matieres.push_back(&mat);
+
          }
          else{
             matieres[i]->setEnseignantResp(enseignants[j]);
          }
          enseignants[j]->ajouterMatiere(matt);
+         enseignants[j]->afficher();
         }
         else{
-            cout << "Enseignant n'exist pas" << endl;
+            cout << "Enseignant N'exist Pas" << endl;
         }
         break;
-    case 21:
-           cout << "matiere:" << endl;
+    case 21:      
+        cout << "Niveau, Numero:" << endl;
+        cin >> name1 >> nombre;
+
+          cout << "Matiere:" << endl;
         cin >> matt;
-        cout << "Niveau:" << endl;
-        cin >> name1;
-        cout << "Numero:" << endl;
-        cin >> nombre;
         j = chercher(name1, nombre, groupes);
         if( j != -1){
          i = chercher(matt, matieres);
@@ -1624,56 +1661,53 @@ cout <<"Niveau:" << endl;
             mat.setEnseignantResp(nullptr);
             matieres.push_back(&mat);
          }
-    
+
          groupes[j]->ajouterMatiere(&mat);
+         groupes[j]->afficher();
          for(size_t z = 0; z < groupes[j]->getEtudiants().size(); z++){
             groupes[j]->getEtudiants()[z]->ajouterMatiere(matt, 0);
          }
         }
         else{
-            cout << "Groupe n'exist pas" << endl;
+            cout << "Groupe N'exist Pas" << endl;
         }
         break;
     case 22:
-          cout << "niveau:" << endl;
+          cout << "Niveau:" << endl;
         cin >> matt;
-        cout << "Nom:" << endl;
-        cin >> name1;
-        cout << "Prenom:" << endl;
-        cin >> name2;
+        cout << "Nom, Prenom:" << endl;
+        cin >> name1 >> name2;
         j = chercher(name1, name2, enseignants);
-        if( j != -1){  
-         enseignants[j]->ajouterMatiere(matt);
+        if( j != -1){
+         enseignants[j]->assignerNiveau(matt);
+         enseignants[j]->afficher();
         }
         else{
-            cout << "Enseignant n'exist pas" << endl;
+            cout << "Enseignant N'exist Pas" << endl;
         }
         break;
     case 23:
-        cout << "Nom:" << endl;
-        cin >> name1;
-        cout << "Prenom:" << endl;
-        cin >> name2;
-        cout << "Niveau:" << endl;
-        cin >> name3;
-        cout << "Numero:" << endl;
-        cin >> nombre;
+        cout << "Nom, Prenom:" << endl;
+        cin >> name1 >> name2;
+        cout << "Niveau, Numero:" << endl;
+        cin >> name3 >> nombre;
 
         i = chercher(name1, name2, etudiants);
         j = chercher(name3, nombre, groupes);
        if(i != -1){
          if(j != -1){
             groupes[j]->ajouterEtudiant(etudiants[i]);
+            groupes[j]->afficher();
          }
          else
-         {cout << "Groupe n'exist pas" << endl;}
+         {cout << "Groupe N'exist Pas" << endl;}
        }
        else
-      { cout << "Etudiant n'exist pas" << endl;}
+      { cout << "Etudiant N'exist Pas" << endl;}
 
         break;
     case 24:
-        cout << "Nom" << endl;
+        cout << "Nom De Matiere" << endl;
         cin >> name1;
         i = chercher(name1, matieres);
         for(size_t z = 0; z < enseignants.size(); z++){
@@ -1692,180 +1726,158 @@ if(i != -1){
     case 25:
          cout << "Nom de matiere" << endl;
         cin >> name1;
-         cout << "Nom de l'enseignant" << endl;
-        cin >> name2;
-         cout << "Prenom de l'enseignant" << endl;
-        cin >> name3;
+         cout << "Nom Et Prenom De L'enseignant" << endl;
+        cin >> name2 >> name3;
 
         i = chercher(name2,name3, enseignants);
         if(i != -1){
             enseignants[i]->supprimerMatiere(name1);
+            enseignants[i]->afficher();
         }
       else{
-        cout << "Enseignant n'exist pas" << endl;
+        cout << "Enseignant N'exist Pas" << endl;
       }
 
-        break;    
+        break;
     case 26:
-         cout << "Nom de matiere" << endl;
+         cout << "Nom de Matiere" << endl;
         cin >> name1;
-         cout << "Niveau" << endl;
-        cin >> name2;
-         cout << "Numero" << endl;
-        cin >> nombre;
+         cout << "Niveau, Numero" << endl;
+        cin >> name2 >> nombre;
         i = chercher(name2, nombre, groupes);
         if(i != -1){
             j = chercher(name1, matieres);
             if(j != -1){
                 groupes[i]->supprimerMatiere(matieres[j]);
+                groupes[i]->afficher();
             }
-            
+
         }else
-        {cout << "Groupe n'exist pas" << endl;}
+        {cout << "Groupe N'exist Pas" << endl;}
 
         break;
     case 27:
-        cout << "Niveau" << endl;
-        cin >> name2;
-         cout << "Numero" << endl;
-        cin >> nombre;
+        cout << "Niveau, Numero" << endl;
+        cin >> name2 >> nombre;
         i = chercher(name2, nombre, groupes);
         if(i != -1){
             groupes[i]->supprimerMatieres();
+            groupes[i]->afficher();
         }
         else
-        {cout << "Groupe n'exist pas" << endl;}
+        {cout << "Groupe N'exist Pas" << endl;}
         break;
     case 28:
          cout << "Niveau:" << endl;
         cin >> matt;
-        cout << "Nom:" << endl;
-        cin >> name1;
-        cout << "Prenom:" << endl;
-        cin >> name2;
+        cout << "Nom, Prenom:" << endl;
+        cin >> name1 >> name2;
         j = chercher(name1, name2, enseignants);
         if( j != -1){
             enseignants[j]->supprimerNiveau(matt);
+            enseignants[j]->afficher();
         }
         else{
-            cout << "Enseignant n'exist pas" << endl;
+            cout << "Enseignant N'exist Pas" << endl;
         }
         break;
     case 29:
-        cout << "Niveau:" << endl;
-        cin >> name1;
-        cout << "Numero:" << endl;
-        cin >> nombre;
-        cout << "Nom:" << endl;
-        cin >> name2;
-        cout << "Prenom:" << endl;
-        cin >> name3;
+        cout << "Niveau, Numero:" << endl;
+        cin >> name1 >> nombre;
+        cout << "Nom, Prenom:" << endl;
+        cin >> name2 >> name3;
+
         j = chercher(name2, name3, etudiants);
         i = chercher(name1, nombre, groupes);
         if( i != -1){
             if(j != -1){
                 groupes[i]->supprimerEtudiant(etudiants[j]);
+                groupes[i]->afficher();
             }
             else{
-                cout << "Etudiant n'exist pas" << endl;
+                cout << "Etudiant N'exist Pas" << endl;
             }
         }
         else{
-            cout << "Groupe n'exist pas" << endl;
+            cout << "Groupe N'exist Pas" << endl;
         }
         break;
     case 30:
-         cout << "Niveau:" << endl;
-        cin >> name1;
-        cout << "Numero:" << endl;
-        cin >> nombre;
+         cout << "Niveau, Numero:" << endl;
+        cin >> name1 >> nombre;
         i = chercher(name1, nombre, groupes);
         if( i != -1){
             groupes[i]->supprimerEtudiants();
+            groupes[i]->afficher();
         }
          else{
-            cout << "Groupe n'exist pas" << endl;
+            cout << "Groupe N'exist Pas" << endl;
         }
-        break; 
+        break;
     case 31:
-        cout << "Niveau:" << endl;
-        cin >> name1;
-        cout << "Numero:" << endl;
-        cin >> nombre;
+        cout << "Niveau, Numero:" << endl;
+        cin >> name1 >> nombre;
         cout <<"Id: " << endl;
         cin >> name2;
         i = chercher(name1, nombre, groupes);
         if( i != -1){
             groupes[i]->supprimerEtudiantParId(name2);
+            groupes[i]->afficher();
         }
          else{
-            cout << "Groupe n'exist pas" << endl;
+            cout << "Groupe N'exist Pas" << endl;
         }
         break;
     case 32:
-        cout << "Niveau de groupe:" << endl;
-        cin >> name1;
-        cout << "Numero:" << endl;
-        cin >> nombre;
-        cout <<"Niveau d'etudiant: " << endl;
-        cin >> name2;
+        cout << "Niveau Et Numero De Groupe:" << endl;
+        cin >> name1 >> nombre;
         i = chercher(name1, nombre, groupes);
         if( i != -1){
-            groupes[i]->supprimerEtudiantParId(name2);
+            groupes[i]->supprimerEtudiantParNiveau();
+            groupes[i]->afficher();
         }
          else{
-            cout << "Groupe n'exist pas" << endl;
+            cout << "Groupe N'exist Pas" << endl;
         }
         break;
     case 33:
-         cout << "Niveau de groupe:" << endl;
-        cin >> name1;
-        cout << "Numero:" << endl;
-        cin >> nombre;
+         cout << "Niveau Et Numero De Groupe:" << endl;
+        cin >> name1 >> nombre;
         cout <<"Moyenne: " << endl;
         cin >> salaire;
         i = chercher(name1, nombre, groupes);
         if( i != -1){
             groupes[i]->supprimerEtudiantParMoyenne(salaire);
+            groupes[i]->afficher();
         }
          else{
-            cout << "Groupe n'exist pas" << endl;
+            cout << "Groupe N'exist Pas" << endl;
         }
         break;
     case 34:
-        cout << "quitter" << endl;
+        cout << "Quitter" << endl;
         break;
     default:
-        cout << "choix invalide" << endl;
+        cout << "Choix Invalide" << endl;
         break;
    }
    }
 
 }
 else{
-    cout << "mot de passe incorrect" << endl;
+    cout << "Mot De Passe Incorrect" << endl;
 }
    }
    else if(choix == 2){
-cout << "mode admin" << endl;
+cout << "mode enseignant" << endl;
 cout << "entrer le mot de passe" << endl;
 cin >> mp;
 if(mp == motdepasse){
-    while(choix2 != 34){
-        while(x == -1){
-     cout <<"Votre nom" <<endl;
-     cin >> name;
-     cout <<"Votre prenom" <<endl;
-     cin >> lastName;
-     x = chercher(name, lastName, enseignants);
-     if(x == -1){
-        cout << "vous n'etes pas enseignant" << endl;
-     }
-        }
-     
+    while(choix2 != 26){
+
      cout << "*************************"<< endl;
    cout << "Menu:" << endl;
-  
+
    cout << "1.Prendre Vacances" << endl;
    cout << "2.Afficher les admins" << endl;
    cout << "3.Afficher les enseignants" << endl;
@@ -1879,26 +1891,26 @@ if(mp == motdepasse){
    cout << "11.Afficher resultat final d'un etudiant" << endl;
    cout << "12.Afficher l'absence total d'un etudiant" << endl;
    cout << "13.Afficher moyenne d'un groupe" << endl;
-   cout << "14.Ajouter Un delegue" << endl;
-
-   cout << ".Ajouter Une date d'examen" << endl;
-  
-   cout << ".Supprimer date d'examen" << endl;
-   cout << ".Supprimer date d'examen par matiere" << endl;
-   
-   cout << ".Incrementer l'absence d'un etudiant" << endl;
-   cout << ".Planifier un evenement" << endl;
-   cout << ".Changer delegue" << endl;
-  
- 
-   cout << "34.Quitter" << endl;
+   cout << "14.Ajouter Un delegue a un groupe" << endl;
+   cout << "15.Ajouter Une date d'examen" << endl;
+   cout << "16.Ajouter Une Tache a un delegue" << endl;
+   cout << "17.Supprimer date d'examen" << endl;
+   cout << "18.Supprimer date d'examen par matiere" << endl;
+   cout << "19.Supprimer Une Tache d'un delegue" << endl;
+   cout << "20.Supprimer tous les Taches d'un delegue" << endl;
+   cout << "21.Supprimer les Taches completes d'un delegue" << endl;
+   cout << "22.Incrementer l'absence d'un etudiant" << endl;
+   cout << "23.Evaluer un delegue" << endl;
+   cout << "24.Planifier un evenement" << endl;
+   cout << "25.Changer delegue" << endl;
+   cout << "26.Quitter" << endl;
    cout << "votre choix:"<< endl;
    cout << "*************************"<< endl;
    cin >> choix2;
-   
+
    switch (choix2)
    {
-    
+
     case 1:
         cout << "prendre des vacances" << endl;
           cout << "nom:" << endl;
@@ -1950,7 +1962,7 @@ if(mp == motdepasse){
         else{
             cout << "ce groupe n'existe pas" << endl;
         }
-    break;  
+    break;
     case 7:
      cout << "Affichage les matieres:" << endl;
         afficher(matieres);
@@ -1985,7 +1997,7 @@ if(mp == motdepasse){
             }
         }
         break;
-        
+
     case 9:
 cout <<"Niveau:" << endl;
         cin >> name1;
@@ -2000,7 +2012,7 @@ cout <<"Niveau:" << endl;
             }
 
         break;
-   
+
     case 10:
     cout <<"Nom:" << endl;
         cin >> name1;
@@ -2013,7 +2025,7 @@ cout <<"Niveau:" << endl;
    }
    else
    {cout << "Etudiant n'existe pas" << endl;}
-   
+
     break;
      case 11:
     cout <<"Nom:" << endl;
@@ -2030,9 +2042,9 @@ cout <<"Niveau:" << endl;
    }
    else
    {cout << "Etudiant n'existe pas" << endl;}
-   
+
     break;
-   
+
      case 12:
     cout <<"Nom:" << endl;
         cin >> name1;
@@ -2045,7 +2057,7 @@ cout <<"Niveau:" << endl;
    }
    else
    {cout << "Etudiant n'existe pas" << endl;}
-   
+
     break;
      case 13:
 cout <<"Niveau:" << endl;
@@ -2062,279 +2074,193 @@ cout <<"Niveau:" << endl;
 
         break;
     case 14:
-        cout<<"Nom d'etudiant:" << endl;
-        cin >> name1;
-        cout<<"Presom d'etudiant:" << endl;
-        cin >> name2;
-        j = chercher(name1, name2, etudiants);
+        cout<<"Nom de delegue (nom, prenom):" << endl;
+        cin >> name1 >> name2;
+        
+        cout<<"Groupe (niveau, numero):" << endl;
+        cin >> name3 >> nombre;
+        j = chercher(name1, name2, delegues);
+        i =chercher(name3, nombre, groupes);
         if( j != -1){
-            del.setNom(etudiants[j]->getNom());
-            del.setPrenom(etudiants[j]->getPrenom());
-            del.setAge(etudiants[j]->getAge());
-            del.setNumeroTele(etudiants[j]->getNumeroTele());
-            del.setIdEtudiant(etudiants[j]->getIdEtudiant());
-            del.setNiveau(etudiants[j]->getNiveau());
-            del.setAnneeInscription(etudiants[j]->getAnneeInscription());
-            del.setNotes(etudiants[j]->getNotes());
-            del.setAbsence(etudiants[j]->getAbsence());
-            del.setMatieres(etudiants[j]->getMatieres());
-             cin >> del;
-        delegues.push_back(&del);
-        del.afficher();    
+            if(i != -1){
+            groupes[i]->setDelegue(delegues[j]);
+            groupes[i]->afficher();
+            }
+            else{
+                 cout<<"groupe n'existe pas"<<endl;
+            }
+            
         }
         else{
-        cout<<"etudiant n'existe pas"<<endl;
+        cout<<"delegue n'existe pas"<<endl;
         }
         break;
-   
-    case 20:
+
+    case 15:
          cout << "matiere:" << endl;
         cin >> matt;
-        cout << "Nom:" << endl;
-        cin >> name1;
-        cout << "Prenom:" << endl;
-        cin >> name2;
-        j = chercher(name1, name2, enseignants);
+        cout << "Date(day, month, year):" << endl;
+        cin >> d1.day >> d1.month >> d1.year;
+        cout << "groupe (niveau, numero):" << endl;
+        cin >> name1 >> nombre;
+        j = chercher(name1, nombre, groupes);
+        i = chercher(matt, matieres);
         if( j != -1){
-         i = chercher(matt, matieres);
-         if( i == -1){
-            mat.setNom(matt);
-            mat.setEnseignantResp(enseignants[j]);
-            matieres.push_back(&mat);
-         }
-         else{
-            matieres[i]->setEnseignantResp(enseignants[j]);
-         }
-         enseignants[j]->ajouterMatiere(matt);
+         if( i != -1){
+       groupes[j]->ajouterDateExamen(d1, matieres[i]);
+       groupes[j]->afficher();
         }
         else{
-            cout << "Enseignant n'exist pas" << endl;
+            cout << "materie n'exist pas" << endl;
+        }}else{
+            cout << "groupe n'exist pas" << endl;
+        }
+        break;
+    case 16:
+           cout << "delegue (nom, prenom):" << endl;
+        cin >> name1 >> name2;
+
+        cout << "tache:" << endl;
+        cin >> name3;
+
+        j = chercher(name1, name2, delegues);
+        if( j != -1){
+        delegues[j]->ajouterTache(name3);
+        delegues[j]->afficher();
+        }
+        else{
+            cout << "delegue n'exist pas" << endl;
+        }
+        break;
+    case 17:
+          cout << "date:" << endl;
+        cin >> d1.day >> d1.month >> d1.year;
+
+        cout << "group (niveau, numero):" << endl;
+        cin >> name1 >> nombre;
+
+        j = chercher(name1, nombre, groupes);
+        if( j != -1){
+         groupes[j]->supprimerDateExamen(d1);
+        groupes[j]->afficher();
+        }
+        else{
+            cout << "Groupe n'exist pas" << endl;
+        }
+        break;
+    case 18:
+        cout << "matiere:" << endl;
+        cin >> matt;
+
+        cout << "group (niveau, numero):" << endl;
+        cin >> name1 >> nombre;
+
+        j = chercher(name1, nombre, groupes);
+        i = chercher(matt, matieres);
+        if( j != -1){
+         if( i != -1){
+        groupes[j]->supprimerDateExamen(matieres[i]);
+        groupes[j]->afficher();
+        }
+        else{
+            cout << "materie n'exist pas" << endl;
+        }}else{
+            cout << "groupe n'exist pas" << endl;
+        }
+        break;
+    case 19:
+         cout << "delegue (nom, prenom):" << endl;
+        cin >> name1 >> name2;
+
+        cout << "tache:" << endl;
+        cin >> name3;
+
+        j = chercher(name1, name2, delegues);
+        if( j != -1){
+        delegues[j]->supprimerTache(name3);
+        delegues[j]->afficher();
+        }
+        else{
+            cout << "delegue n'exist pas" << endl;
+        }
+        break;
+    case 20:
+          cout << "delegue (nom, prenom):" << endl;
+        cin >> name1 >> name2;
+
+        j = chercher(name1, name2, delegues);
+        if( j != -1){
+        delegues[j]->supprimerTaches();
+        delegues[j]->afficher();
+        }
+        else{
+            cout << "delegue n'exist pas" << endl;
         }
         break;
     case 21:
-           cout << "matiere:" << endl;
-        cin >> matt;
-        cout << "Niveau:" << endl;
-        cin >> name1;
-        cout << "Numero:" << endl;
-        cin >> nombre;
-        j = chercher(name1, nombre, groupes);
+           cout << "delegue (nom, prenom):" << endl;
+        cin >> name1 >> name2;
+
+        j = chercher(name1, name2, delegues);
         if( j != -1){
-         i = chercher(matt, matieres);
-         if( i == -1){
-            mat.setNom(matt);
-            mat.setEnseignantResp(nullptr);
-            matieres.push_back(&mat);
-         }
-    
-         groupes[j]->ajouterMatiere(&mat);
-         for(size_t z = 0; z < groupes[j]->getEtudiants().size(); z++){
-            groupes[j]->getEtudiants()[z]->ajouterMatiere(matt, 0);
-         }
+        delegues[j]->supprimerTachesComplete();
+        delegues[j]->afficher();
         }
         else{
-            cout << "Groupe n'exist pas" << endl;
+            cout << "delegue n'exist pas" << endl;
         }
         break;
     case 22:
-          cout << "niveau:" << endl;
-        cin >> matt;
-        cout << "Nom:" << endl;
-        cin >> name1;
-        cout << "Prenom:" << endl;
-        cin >> name2;
-        j = chercher(name1, name2, enseignants);
-        if( j != -1){  
-         enseignants[j]->ajouterMatiere(matt);
-        }
-        else{
-            cout << "Enseignant n'exist pas" << endl;
-        }
-        break;
-    case 23:
-        cout << "Nom:" << endl;
-        cin >> name1;
-        cout << "Prenom:" << endl;
-        cin >> name2;
-        cout << "Niveau:" << endl;
+        cout << "Etudiant (nom, prenom):" << endl;
+        cin >> name1 >> name2;
+
+        cout << "matiere:" << endl;
         cin >> name3;
-        cout << "Numero:" << endl;
-        cin >> nombre;
 
         i = chercher(name1, name2, etudiants);
-        j = chercher(name3, nombre, groupes);
-       if(i != -1){
-         if(j != -1){
-            groupes[j]->ajouterEtudiant(etudiants[i]);
-         }
-         else
-         {cout << "Groupe n'exist pas" << endl;}
-       }
-       else
-      { cout << "Etudiant n'exist pas" << endl;}
-
-        break;
-    case 24:
-        cout << "Nom" << endl;
-        cin >> name1;
-        i = chercher(name1, matieres);
-        for(size_t z = 0; z < enseignants.size(); z++){
-            enseignants[z]->supprimerMatiere(name1);
-        }
-if(i != -1){
-        for(size_t z = 0; z < groupes.size(); z++){
-            groupes[z]->supprimerMatiere(matieres[i]);
-            for(size_t k = 0; k < groupes[z]->getEtudiants().size(); k++){
-                groupes[z]->getEtudiants()[k]->supprimerMatiere(name1);
-            }
-        }
-        }
-        supprimer(name1, matieres);
-        break;
-    case 25:
-         cout << "Nom de matiere" << endl;
-        cin >> name1;
-         cout << "Nom de l'enseignant" << endl;
-        cin >> name2;
-         cout << "Prenom de l'enseignant" << endl;
-        cin >> name3;
-
-        i = chercher(name2,name3, enseignants);
         if(i != -1){
-            enseignants[i]->supprimerMatiere(name1);
-        }
-      else{
-        cout << "Enseignant n'exist pas" << endl;
-      }
-
-        break;    
-    case 26:
-         cout << "Nom de matiere" << endl;
-        cin >> name1;
-         cout << "Niveau" << endl;
-        cin >> name2;
-         cout << "Numero" << endl;
-        cin >> nombre;
-        i = chercher(name2, nombre, groupes);
-        if(i != -1){
-            j = chercher(name1, matieres);
-            if(j != -1){
-                groupes[i]->supprimerMatiere(matieres[j]);
-            }
-            
-        }else
-        {cout << "Groupe n'exist pas" << endl;}
-
-        break;
-    case 27:
-        cout << "Niveau" << endl;
-        cin >> name2;
-         cout << "Numero" << endl;
-        cin >> nombre;
-        i = chercher(name2, nombre, groupes);
-        if(i != -1){
-            groupes[i]->supprimerMatieres();
+            etudiants[i]->incrementerAbsence(name3);
+            etudiants[i]->afficher();
         }
         else
-        {cout << "Groupe n'exist pas" << endl;}
+        {cout << "Etudiant n'exist pas" << endl;}
         break;
-    case 28:
-         cout << "Niveau:" << endl;
-        cin >> matt;
-        cout << "Nom:" << endl;
-        cin >> name1;
-        cout << "Prenom:" << endl;
-        cin >> name2;
-        j = chercher(name1, name2, enseignants);
+    case 23:
+         cout << "Delegue (nom, prenom):" << endl;
+        cin >> name1 >> name2;
+        j = chercher(name1, name2, delegues);
         if( j != -1){
-            enseignants[j]->supprimerNiveau(matt);
+            delegues[j]->evaluation();
         }
         else{
-            cout << "Enseignant n'exist pas" << endl;
+            cout << "Delegue n'exist pas" << endl;
         }
         break;
-    case 29:
-        cout << "Niveau:" << endl;
-        cin >> name1;
-        cout << "Numero:" << endl;
-        cin >> nombre;
-        cout << "Nom:" << endl;
-        cin >> name2;
-        cout << "Prenom:" << endl;
-        cin >> name3;
-        j = chercher(name2, name3, etudiants);
+    case 24:
+        cout << "Groupe (niveau, numero):" << endl;
+        cin >> name1 >> nombre;
+        cout << "date (year, month, day):" << endl;
+        cin >> d1.year >> d1.month >> d1.day;
         i = chercher(name1, nombre, groupes);
         if( i != -1){
-            if(j != -1){
-                groupes[i]->supprimerEtudiant(etudiants[j]);
-            }
-            else{
-                cout << "Etudiant n'exist pas" << endl;
-            }
+        groupes[i]->planifierEvenement(d1);
         }
         else{
             cout << "Groupe n'exist pas" << endl;
         }
         break;
-    case 30:
-         cout << "Niveau:" << endl;
-        cin >> name1;
-        cout << "Numero:" << endl;
-        cin >> nombre;
+    case 25:
+        cout << "Groupe (niveau, numero):" << endl;
+        cin >> name1 >> nombre;
         i = chercher(name1, nombre, groupes);
         if( i != -1){
-            groupes[i]->supprimerEtudiants();
+        groupes[i]->changerDelegue();
         }
-         else{
-            cout << "Groupe n'exist pas" << endl;
-        }
-        break; 
-    case 31:
-        cout << "Niveau:" << endl;
-        cin >> name1;
-        cout << "Numero:" << endl;
-        cin >> nombre;
-        cout <<"Id: " << endl;
-        cin >> name2;
-        i = chercher(name1, nombre, groupes);
-        if( i != -1){
-            groupes[i]->supprimerEtudiantParId(name2);
-        }
-         else{
+        else{
             cout << "Groupe n'exist pas" << endl;
         }
         break;
-    case 32:
-        cout << "Niveau de groupe:" << endl;
-        cin >> name1;
-        cout << "Numero:" << endl;
-        cin >> nombre;
-        cout <<"Niveau d'etudiant: " << endl;
-        cin >> name2;
-        i = chercher(name1, nombre, groupes);
-        if( i != -1){
-            groupes[i]->supprimerEtudiantParId(name2);
-        }
-         else{
-            cout << "Groupe n'exist pas" << endl;
-        }
-        break;
-    case 33:
-         cout << "Niveau de groupe:" << endl;
-        cin >> name1;
-        cout << "Numero:" << endl;
-        cin >> nombre;
-        cout <<"Moyenne: " << endl;
-        cin >> salaire;
-        i = chercher(name1, nombre, groupes);
-        if( i != -1){
-            groupes[i]->supprimerEtudiantParMoyenne(salaire);
-        }
-         else{
-            cout << "Groupe n'exist pas" << endl;
-        }
-        break;
-    case 34:
+    case 26:
         cout << "quitter" << endl;
         break;
     default:
@@ -2349,9 +2275,172 @@ else{
 }
    }
      else if(choix == 3){
+        cout << "mode delegue" << endl;
+        x =-1;
+ while(choix2 != 9){
+
+     while(x == -1){
+     cout <<"Votre nom" <<endl;
+     cin >> name;
+     cout <<"Votre prenom" <<endl;
+     cin >> lastName;
+     x = chercher(name, lastName, delegues);
+
+     if(x == -1){
+        cout << "vous n'etes pas delegue" << endl;
+     }else{
+        j =chercherGroupeParEtudiant(name, lastName, groupes);
+     }
+        }
+     cout << "*************************"<< endl;
+   cout << "Menu:" << endl;
+
+   cout << "1.Afficher les enseignants de votre groupe" << endl;
+   cout << "2.Afficher les Etudiants de votre groupe" << endl;
+   cout << "3.Afficher les information de votre groupe" << endl;
+   cout << "4.Afficher les matieres de votre groupe" << endl;
+   cout << "5.Ajouter Une Tache" << endl;
+   cout << "6.Evaluer un delegue" << endl;
+   cout << "7.Planifier un evenement" << endl;
+   cout << "8.completer un tache" << endl;
+   cout << "9.Quitter" << endl;
+   cout << "votre choix:"<< endl;
+   cout << "*************************"<< endl;
+   cin >> choix2;
+
+   switch (choix2)
+   {
+    case 1:
+        cout << "Affichage les enseignants:" << endl;
+
+       for(size_t z = 0; z < groupes[j]->getMatieres().size(); z++){
+        cout << groupes[j]->getMatieres()[z]->getEnseignantRespNom() << endl;
+       }
+        break;
+    case 2:
+        cout << "Affichage les Etudiants:" << endl;
+          for(size_t z = 0; z < groupes[j]->getEtudiants().size(); z++){
+        cout << groupes[j]->getEtudiants()[z]->getNom() << " " << groupes[j]->getEtudiants()[z]->getPrenom() << endl;
+       }
+        break;
+    case 3:
+     cout << "Affichage le groupe:" << endl;
+        groupes[j]->afficher();
+        break;
+    case 4:
+     cout << "Affichage les matieres:" << endl;
+          for(size_t z = 0; z < groupes[j]->getMatieres().size(); z++){
+        cout << groupes[j]->getMatieres()[z]->getNom() << endl;
+       }
+        break;
+    case 5:
+        cout << "tache:" << endl;
+        cin >> name3;
+        delegues[x]->ajouterTache(name3);
+        delegues[x]->afficher();
+        break;
+
+    case 6:
+            delegues[x]->evaluation();
+        break;
+    case 7:
+        cout << "date (year, month, day):" << endl;
+        cin >> d1.year >> d1.month >> d1.day;
+        groupes[j]->planifierEvenement(d1);
+
+        break;
+          case 8:
+        cout << "tache:" << endl;
+        cin >> name3;
+        delegues[x]->completerTache(name3);
+
+        break;
+    case 9:
+        cout << "quitter" << endl;
+        break;
+    default:
+        cout << "choix invalide" << endl;
+        break;
+   }
+   }
 
    }
      else if(choix == 4){
+        cout << "mode etudiant" << endl;
+        x =-1;
+ while(choix2 != 7){
+
+     while(x == -1){
+     cout <<"Votre nom" <<endl;
+     cin >> name;
+     cout <<"Votre prenom" <<endl;
+     cin >> lastName;
+     x = chercher(name, lastName, etudiants);
+
+     if(x == -1){
+        cout << "vous n'etes pas un etudiant" << endl;
+     }else{
+        j =chercherGroupeParEtudiant(name, lastName, groupes);
+        groupes[j]->afficher();
+     }
+        }
+     cout << "*************************"<< endl;
+   cout << "Menu:" << endl;
+
+   cout << "1.Afficher votre informations" << endl;
+   cout << "2.Afficher votre notes et absence" << endl;
+   cout << "3.Afficher les enseignants de votre groupe" << endl;
+   cout << "4.Afficher les Etudiants de votre groupe" << endl;
+   cout << "5.Afficher les information de votre groupe" << endl;
+   cout << "6.Afficher les matieres de votre groupe" << endl;
+   cout << "7.Quitter" << endl;
+   cout << "votre choix:"<< endl;
+   cout << "*************************"<< endl;
+   cin >> choix2;
+
+   switch (choix2)
+   {
+   case 1:
+        cout << "Affichage de votre information:" << endl;
+
+       etudiants[x]->afficher();
+        break;
+    case 2:
+        cout << "Affichage de votre notes:" << endl;
+
+       etudiants[x]->afficherNotes();
+        break;
+    case 3:
+        cout << "Affichage des enseignants:" << endl;
+
+       for(size_t z = 0; z < groupes[j]->getMatieres().size(); z++){
+        cout << groupes[j]->getMatieres()[z]->getEnseignantResp()->getNom() << " " << groupes[j]->getMatieres()[z]->getEnseignantResp()->getPrenom() << endl;
+       }
+        break;
+    case 4:
+        cout << "Affichage des Etudiants:" << endl;
+          for(size_t z = 0; z < groupes[j]->getEtudiants().size(); z++){
+        cout << groupes[j]->getEtudiants()[z]->getNom() << " " << groupes[j]->getEtudiants()[z]->getPrenom() << endl;
+       }
+        break;
+    case 5:
+     cout << "Affichage le groupe:" << endl;
+        groupes[j]->afficher();
+        break;
+    case 6:
+     cout << "Affichage les matieres:" << endl;
+          for(size_t z = 0; z < groupes[j]->getMatieres().size(); z++){
+        cout << groupes[j]->getMatieres()[z]->getNom() << endl;
+       }
+        break;
+    case 7:
+        cout << "quitter" << endl;
+        break;
+    default:
+        cout << "choix invalide" << endl;
+        break;
+   }
+   }
 
    }
      else if(choix != 5){
@@ -2360,4 +2449,3 @@ else{
  }
     return 0;
 }
-
